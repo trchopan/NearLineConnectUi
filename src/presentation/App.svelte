@@ -10,9 +10,9 @@
   <Router>
     <Navigation />
     <div class="px-5 max-w-xl mx-auto">
-      <Route path="/" component={Home} />
-      <Route path="faucet" component={Faucet} />
-      <Route path="staking" component={Staking} />
+      <Route path="/"><Home /></Route>
+      <Route path="faucet"><Faucet /></Route>
+      <Route path="staking"><Staking /></Route>
     </div>
   </Router>
 </main>
