@@ -8,9 +8,7 @@
     {#each titleAndValues as t}
       <div class="sm:flex place-content-between">
         <h2 class="card-title">{t.title}</h2>
-        <h2 class="font-medium text-2xl">
-          {t.value}
-        </h2>
+        <h2 class="font-medium text-2xl">{t.value}</h2>
       </div>
     {/each}
     <div>
