@@ -3,7 +3,7 @@ import {NearRepo} from '@/application/inject'
 import * as T from 'fp-ts/Task'
 import * as TE from 'fp-ts/TaskEither'
 import {pipe} from 'fp-ts/function'
-import {derived, writable} from 'svelte/store'
+import {writable} from 'svelte/store'
 import {Result} from '@/application/result'
 import type {NearError} from '@/domain/near/INearRepo'
 

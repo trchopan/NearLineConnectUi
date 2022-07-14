@@ -61,10 +61,7 @@
     }),
     hasData: data => ({
       onClick: () => nearLogout(),
-      button:
-        data.accountId.getOrElse('error accountId') +
-        ' - ' +
-        data.network.getOrElse('error network'),
+      button: data.accountId.getOrElse('error accountId'),
       menuText: 'Logout NEAR Near',
     }),
     hasError: err => ({

@@ -27,8 +27,40 @@ export class NearError extends Error {
 }
 
 export interface INearRepo {
+  /**
+   *
+   * Initialize the Near network given the configuration in the repo constructor
+   *
+   * Example:
+   * ```typescript
+   * const NearRepo: INearRepo = new _NearRepo(
+   *   nearBrowserLocalStorage(getConfig('development')),
+   *   'staking-contract.testnet'
+   * )
+   *
+   * NearRepo.initNear()
+   * ```
+   **/
   initNear(): TE.TaskEither<NearError, void>
+
+  /**
+   *
+   * Get the current Near Account information. This is distinguish from the Liff Profile.
+   * If not found account in current Storage. It will throw `NearError.AccountNotFound`.
+   **/
   getNearProfile(): TE.TaskEither<NearError, NearProfile>
+
+  /**
+   *
+   * Navigate to NEAR wallet page to perform login.
+   * Configuration for the wallet Url can be found in the `infrastructure/NearRepo.ts`
+   * Under `getConfig(env)`
+   **/
   login(): TE.TaskEither<NearError, void>
+
+  /**
+   *
+   * Perform logout and cleanup `Storage` of the current `Account`
+   **/
   logout(): E.Either<NearError, void>
 }
