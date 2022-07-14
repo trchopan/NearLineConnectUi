@@ -1,8 +1,8 @@
 import {z} from 'zod'
 import {ValueObject} from '@/domain/core/ValueObject'
 
-export class UserId extends ValueObject<string> {
-  protected name = 'UserId'
+export class NearId extends ValueObject<string> {
+  protected name = 'NearId'
   protected schema = z.string()
 
   constructor(_input: string) {
@@ -11,6 +11,6 @@ export class UserId extends ValueObject<string> {
   }
 
   static new() {
-    return new UserId('not-supported')
+    return new NearId('not-supported')
   }
 }

@@ -4,7 +4,16 @@
   import {Link} from 'svelte-navigator'
   import {Icon} from '@steeze-ui/svelte-icon'
   import {MenuAlt2} from '@steeze-ui/heroicons'
-  import {userProfile, login, logout} from '@/application/useLiffAuth'
+  import {
+    liffProfile,
+    login as lineLogin,
+    logout as lineLogout,
+  } from '@/application/useLiffAuth'
+  import {
+    nearProfile,
+    login as nearLogin,
+    logout as nearLogout,
+  } from '@/application/useNearAuth'
 
   interface PageRoute {
     link: string
@@ -16,22 +25,52 @@
     {link: '/nft', text: 'NFT'},
   ]
 
-  $: lineDropdown = $userProfile.match({
+  $: lineDropdown = $liffProfile.match({
     notInited: () => ({
-      onClick: () => login(),
+      onClick: () => lineLogin(),
       button: 'Login',
       menuText: 'Login with LINE Liff',
     }),
-    loading: () => ({onClick: () => undefined, button: 'Loading', menuText: ''}),
+    loading: () => ({
+      onClick: () => undefined,
+      button: 'Loading',
+      menuText: '',
+    }),
     hasData: data => ({
-      onClick: () => logout(),
-      button: data.displayName.getOrCrash(),
+      onClick: () => lineLogout(),
+      button: data.displayName.getOrElse('error name'),
       menuText: 'Logout LINE',
     }),
     hasError: err => ({
-      onClick: () => login(),
+      onClick: () => lineLogin(),
       button: 'Login',
       menuText: 'Login with LINE Liff',
+    }),
+  })
+
+  $: nearDropdown = $nearProfile.match({
+    notInited: () => ({
+      onClick: () => nearLogin(),
+      button: 'Login',
+      menuText: 'Login with NEAR Near',
+    }),
+    loading: () => ({
+      onClick: () => undefined,
+      button: 'Loading',
+      menuText: '',
+    }),
+    hasData: data => ({
+      onClick: () => nearLogout(),
+      button:
+        data.accountId.getOrElse('error accountId') +
+        ' - ' +
+        data.network.getOrElse('error network'),
+      menuText: 'Logout NEAR Near',
+    }),
+    hasError: err => ({
+      onClick: () => nearLogin(),
+      button: 'Login',
+      menuText: 'Login with NEAR Near',
     }),
   })
 </script>
@@ -68,7 +107,7 @@
         <button
           tabindex="0"
           class={`btn btn-xs m-1 normal-case ${
-            $userProfile.loading ? 'btn-disabled' : ''
+            $liffProfile.loading ? 'btn-disabled' : ''
           }`}
         >
           <img src={LineLogo} class="w-3 h-3 mr-2" alt="0" />
@@ -89,18 +128,27 @@
       </div>
 
       <div class="dropdown dropdown-end">
-        <button tabindex="0" class="btn btn-xs m-1 normal-case">
-          <img src={NearLogo} class="w-3 h-3 mr-2" alt="0" />
-          <span>choptr.testnet</span>
-        </button>
-        <ul
+        <button
           tabindex="0"
-          class="dropdown-content menu menu-compact p-2 shadow bg-base-100 rounded-box whitespace-nowrap"
+          class={`btn btn-xs m-1 normal-case ${
+            $nearProfile.loading ? 'btn-disabled' : ''
+          }`}
         >
-          <li>
-            <span>Disconnect NEAR</span>
-          </li>
-        </ul>
+          <img src={NearLogo} class="w-3 h-3 mr-2" alt="0" />
+          <span>{nearDropdown.button}</span>
+        </button>
+        {#if nearDropdown.menuText}
+          <ul
+            tabindex="0"
+            class="dropdown-content menu menu-compact p-2 shadow bg-base-100 rounded-box whitespace-nowrap"
+          >
+            <li>
+              <span on:click|preventDefault={nearDropdown.onClick}>
+                {nearDropdown.menuText}
+              </span>
+            </li>
+          </ul>
+        {/if}
       </div>
     </div>
   </div>
