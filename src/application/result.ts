@@ -34,7 +34,7 @@ export class Result<T, Err> {
   }
 
   setLoading() {
-    this.state === DataState.Loading
+    this.state = DataState.Loading
     return this
   }
 
