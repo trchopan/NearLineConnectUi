@@ -1,6 +1,6 @@
 import {Entity} from '@/domain/core/Entity'
 import {NearId} from './NearId'
-import {NearNetworkValue} from './NearNetworkIdValue'
+import {NearNetworkValue} from './NearNetworkValue'
 
 /**
 ConnectedNearAccount {accessKeyByPublicKeyCache: {…}, connection: Connection, accountId: 'choptr.testnet', walletConnection: NearConnection}
