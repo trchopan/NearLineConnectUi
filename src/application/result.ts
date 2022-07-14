@@ -50,12 +50,45 @@ export class Result<T, Err> {
     return this
   }
 
-  fold<R>(
-    notInited: () => R,
-    loading: () => R,
-    hasData: (data: T) => R,
+  onNotInited<R>(notInited: () => R) {
+    if (this.state === DataState.NotInited) {
+      notInited()
+    }
+    return this
+  }
+
+  onLoading<R>(loading: () => R) {
+    if (this.state === DataState.Loading) {
+      loading()
+    }
+    return this
+  }
+
+  onHasData<R>(hasData: (data: T) => R) {
+    if (this.state === DataState.HasData) {
+      hasData(this.value)
+    }
+    return this
+  }
+
+  onHasError<R>(hasError: (err: Err) => R) {
+    if (this.state === DataState.HasError) {
+      hasError(this.err)
+    }
+    return this
+  }
+
+  match<R>({
+    notInited,
+    loading,
+    hasData,
+    hasError,
+  }: {
+    notInited: () => R
+    loading: () => R
+    hasData: (data: T) => R
     hasError: (err: Err) => R
-  ) {
+  }) {
     if (this.state === DataState.NotInited) {
       return notInited()
     }

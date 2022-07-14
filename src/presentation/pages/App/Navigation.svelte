@@ -16,27 +16,24 @@
     {link: '/nft', text: 'NFT'},
   ]
 
-  $: lineDropdown = $userProfile.fold(
-    () => ({
-      onClick: () => {
-        login()
-      },
-      text: 'Login with LINE Liff',
+  $: lineDropdown = $userProfile.match({
+    notInited: () => ({
+      onClick: () => login(),
+      button: 'Login',
+      menuText: 'Login with LINE Liff',
     }),
-    () => ({onClick: () => undefined, text: ''}),
-    data => ({
-      onClick: () => {
-        logout()
-      },
-      text: 'Logout LINE',
+    loading: () => ({onClick: () => undefined, button: 'Loading', menuText: ''}),
+    hasData: data => ({
+      onClick: () => logout(),
+      button: data.displayName.getOrCrash(),
+      menuText: 'Logout LINE',
     }),
-    err => ({
-      onClick: () => {
-        login()
-      },
-      text: 'Login with LINE Liff',
-    })
-  )
+    hasError: err => ({
+      onClick: () => login(),
+      button: 'Login',
+      menuText: 'Login with LINE Liff',
+    }),
+  })
 </script>
 
 <div class="navbar bg-base-100">
@@ -75,24 +72,17 @@
           }`}
         >
           <img src={LineLogo} class="w-3 h-3 mr-2" alt="0" />
-          <span>
-            {$userProfile.fold(
-              () => 'Login',
-              () => 'Loading',
-              data => data.displayName.getOrCrash(),
-              _ => 'Login'
-            )}
-          </span>
+          <span>{lineDropdown.button}</span>
         </button>
-        {#if lineDropdown.text}
+        {#if lineDropdown.menuText}
           <ul
             tabindex="0"
             class="dropdown-content menu menu-compact p-2 shadow bg-base-100 rounded-box whitespace-nowrap"
           >
             <li>
-              <span on:click|preventDefault={lineDropdown.onClick}
-                >{lineDropdown.text}</span
-              >
+              <span on:click|preventDefault={lineDropdown.onClick}>
+                {lineDropdown.menuText}
+              </span>
             </li>
           </ul>
         {/if}
