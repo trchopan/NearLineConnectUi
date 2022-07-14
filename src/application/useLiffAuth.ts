@@ -48,7 +48,6 @@ export const logout = async () => {
   await pipe(
     TE.fromEither(LiffRepo.logout()),
     T.delay(1000), // Simulate loading
-    TE.chainW(() => LiffRepo.getUserProfile()),
     TE.fold(
       err => T.of(userProfile.update(v => v.setError(err))),
       _ => T.of(userProfile.update(v => v.reset()))

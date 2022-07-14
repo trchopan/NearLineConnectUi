@@ -17,18 +17,21 @@
   ]
 
   $: lineDropdown = $userProfile.fold(
-    () => ({onClick: () => undefined, text: ''}),
+    () => ({
+      onClick: () => {
+        login()
+      },
+      text: 'Login with LINE Liff',
+    }),
     () => ({onClick: () => undefined, text: ''}),
     data => ({
-      onClick: (e: Event) => {
-        e.preventDefault()
+      onClick: () => {
         logout()
       },
       text: 'Logout LINE',
     }),
     err => ({
-      onClick: (e: Event) => {
-        e.preventDefault()
+      onClick: () => {
         login()
       },
       text: 'Login with LINE Liff',
@@ -68,13 +71,13 @@
         <button
           tabindex="0"
           class={`btn btn-xs m-1 normal-case ${
-            $userProfile.loading || $userProfile.notInited ? 'btn-disabled' : ''
+            $userProfile.loading ? 'btn-disabled' : ''
           }`}
         >
           <img src={LineLogo} class="w-3 h-3 mr-2" alt="0" />
           <span>
             {$userProfile.fold(
-              () => 'Loading',
+              () => 'Login',
               () => 'Loading',
               data => data.displayName.getOrCrash(),
               _ => 'Login'
@@ -87,7 +90,9 @@
             class="dropdown-content menu menu-compact p-2 shadow bg-base-100 rounded-box whitespace-nowrap"
           >
             <li>
-              <span on:click={lineDropdown.onClick}>{lineDropdown.text}</span>
+              <span on:click|preventDefault={lineDropdown.onClick}
+                >{lineDropdown.text}</span
+              >
             </li>
           </ul>
         {/if}
