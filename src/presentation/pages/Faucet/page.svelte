@@ -10,7 +10,11 @@
 
 <div class="flex items-center place-content-between">
   <h1 class="font-medium text-3xl">Faucet</h1>
-  <Interval duration={15_000} on:action={() => console.log('nanii')} />
+  <Interval
+    duration={15_000}
+    on:action={() => console.log('nanii Faucet')}
+    tooltip="Refresh Contract information"
+  />
 </div>
 
 <div class="mt-5 flex flex-col gap-5">

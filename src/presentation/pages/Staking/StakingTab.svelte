@@ -1,5 +1,5 @@
 <script lang="ts">
-  import BigNumberInput from '../../components/BigNumberInput.svelte'
+  import BigNumberInput from '@/presentation/components/BigNumberInput.svelte'
 
   let token = 0
 </script>

@@ -26,7 +26,7 @@
   <h1 class="font-medium text-3xl">Staking</h1>
   <Interval
     duration={15_000}
-    on:action={() => console.log('nanii')}
+    on:action={() => console.log('nanii Staking')}
     tooltip="Refresh Contract information"
   />
 </div>

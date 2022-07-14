@@ -25,7 +25,7 @@
 </script>
 
 {#if tooltip}
-  <div class="tooltip tooltip-bottom" data-tip={tooltip}>
+  <div class="tooltip tooltip-bottom tooltip-left" data-tip={tooltip}>
     <div
       class="radial-progress my-progress"
       style={`--value: ${refreshPercent};`}
