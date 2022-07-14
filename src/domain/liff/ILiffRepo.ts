@@ -1,4 +1,4 @@
-import type {UserProfile} from './UserProfile'
+import type {LiffProfile} from './LiffProfile'
 import type * as TE from 'fp-ts/TaskEither'
 import type * as E from 'fp-ts/Either'
 
@@ -27,7 +27,7 @@ export class LiffError extends Error {
 
 export interface ILiffRepo {
   initLiff(): TE.TaskEither<LiffError, void>
-  getUserProfile(): TE.TaskEither<LiffError, UserProfile>
+  getLiffProfile(): TE.TaskEither<LiffError, LiffProfile>
   login(): E.Either<LiffError, void>
   logout(): E.Either<LiffError, void>
 }

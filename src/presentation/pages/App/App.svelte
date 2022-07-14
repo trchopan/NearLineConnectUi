@@ -4,11 +4,13 @@
   import Faucet from '@/presentation/pages/Faucet/page.svelte'
   import Staking from '@/presentation/pages/Staking/page.svelte'
   import Home from '@/presentation/pages/Home/page.svelte'
-  import {authCheck} from '@/application/useLiffAuth'
+  import {authCheck as liffAuthCheck} from '@/application/useLiffAuth'
+  import {authCheck as nearWalletCheck} from '@/application/useNearAuth'
   import {onMount} from 'svelte'
 
   onMount(async () => {
-    await authCheck()
+    liffAuthCheck()
+    nearWalletCheck()
   })
 </script>
 

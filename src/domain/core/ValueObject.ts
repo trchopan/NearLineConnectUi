@@ -1,7 +1,13 @@
-import {ZodAny, ZodEffects, ZodSchema} from 'zod'
+import type {
+  SafeParseError,
+  SafeParseSuccess,
+  ZodAny,
+  ZodEffects,
+  ZodSchema,
+} from 'zod'
 import {pipe, identity} from 'fp-ts/function'
 import {Either, fold, isLeft, isRight, right, left} from 'fp-ts/Either'
-import {Option} from 'fp-ts/Option'
+import type {Option} from 'fp-ts/Option'
 import {isNull, isUndefined, isEqual, cloneDeep} from 'lodash'
 import {ValueFailure, NotParsedError} from './ValueFailure'
 
@@ -15,11 +21,11 @@ export abstract class ValueObject<T> {
   protected parse() {
     const _parsed = this.schema.safeParse(this._input)
     this._value = _parsed.success
-      ? right(_parsed.data)
+      ? right((_parsed as SafeParseSuccess<T>).data)
       : left(
           new ValueFailure(
-            this._input,
-            _parsed.error.issues.map(e => {
+            this.name,
+            (_parsed as SafeParseError<any>).error.issues.map(e => {
               return {
                 path: e.path.join('-'),
                 code: e.code,
@@ -54,7 +60,17 @@ export abstract class ValueObject<T> {
     return pipe(
       this.val,
       fold(v => {
+        console.error('getOrCrash throws')
         throw v
+      }, identity)
+    )
+  }
+
+  getOrElse(v: T) {
+    return pipe(
+      this.val,
+      fold(() => {
+        return v
       }, identity)
     )
   }

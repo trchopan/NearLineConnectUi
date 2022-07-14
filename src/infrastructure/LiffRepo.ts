@@ -1,4 +1,4 @@
-import {UserProfile, UserProfileMapper} from '@/domain/liff/UserProfile'
+import {LiffProfile, LiffProfileMapper} from '@/domain/liff/LiffProfile'
 import {ILiffRepo, LiffError, LiffErrorCode} from '@/domain/liff/ILiffRepo'
 import type {Liff} from '@liff/liff-types'
 import * as TE from 'fp-ts/TaskEither'
@@ -33,7 +33,7 @@ export class _LiffRepo implements ILiffRepo {
     )
   }
 
-  getUserProfile(): TE.TaskEither<LiffError, UserProfile> {
+  getLiffProfile(): TE.TaskEither<LiffError, LiffProfile> {
     return pipe(
       TE.tryCatch(
         () => this.liff.getProfile(),
@@ -47,7 +47,7 @@ export class _LiffRepo implements ILiffRepo {
           }
         }
       ),
-      TE.map(UserProfileMapper.toDomain)
+      TE.map(LiffProfileMapper.toDomain)
     )
   }
 
@@ -90,7 +90,7 @@ export class _LiffRepoFailure implements ILiffRepo {
     )
   }
 
-  getUserProfile(): TE.TaskEither<LiffError, UserProfile> {
+  getLiffProfile(): TE.TaskEither<LiffError, LiffProfile> {
     return pipe(
       TE.tryCatch(
         () => Promise.reject('profile-not-exist'),
@@ -104,7 +104,17 @@ export class _LiffRepoFailure implements ILiffRepo {
           }
         }
       ),
-      TE.map(UserProfileMapper.toDomain)
+      TE.map(LiffProfileMapper.toDomain)
+    )
+  }
+
+  login(): E.Either<LiffError, void> {
+    return E.tryCatch(
+      () => this.liff.login({redirectUri: 'https://localhost:3000'}),
+      err => {
+        console.error(err)
+        return new LiffError(LiffErrorCode.ServerError, err)
+      }
     )
   }
 

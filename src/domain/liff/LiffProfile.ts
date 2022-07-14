@@ -1,15 +1,15 @@
 import {Entity} from '@/domain/core/Entity'
 import {DisplayNameValue} from './DisplayNameValue'
 import {UrlValue} from './UrlValue'
-import {UserId} from './UserId'
+import {LiffId} from './LiffId'
 
-interface UserProfileProps {
+interface LiffProfileProps {
   displayName: DisplayNameValue
   pictureUrl: UrlValue
 }
 
-export class UserProfile extends Entity<UserProfileProps, UserId> {
-  constructor(props: UserProfileProps, _id: UserId) {
+export class LiffProfile extends Entity<LiffProfileProps, LiffId> {
+  constructor(props: LiffProfileProps, _id: LiffId) {
     super(props, _id)
   }
 
@@ -26,8 +26,8 @@ export class UserProfile extends Entity<UserProfileProps, UserId> {
   }
 }
 
-export class UserProfileMapper {
-  static toDTO({userId, displayName, pictureUrl}: UserProfile): object {
+export class LiffProfileMapper {
+  static toDTO({userId, displayName, pictureUrl}: LiffProfile): object {
     return {
       userId: userId.getOrCrash(),
       displayName: displayName.getOrCrash(),
@@ -35,15 +35,15 @@ export class UserProfileMapper {
     }
   }
 
-  static toDomain({userId, displayName, pictureUrl}: any): UserProfile {
-    return new UserProfile(
+  static toDomain({userId, displayName, pictureUrl}: any): LiffProfile {
+    return new LiffProfile(
       {
         displayName: new DisplayNameValue(displayName),
         pictureUrl: new UrlValue(pictureUrl),
       },
-      new UserId(userId)
+      new LiffId(userId)
     )
   }
 
-  // TODO static toPersist(sp: UserProfile) {}
+  // TODO static toPersist(sp: LiffProfile) {}
 }
