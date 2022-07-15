@@ -12,5 +12,8 @@ export const LiffRepo: ILiffRepo = new _LiffRepo(liff)
 // export const LiffRepo: ILiffRepo = new _LiffRepoFailure(liff)
 export const NearRepo: INearRepo = new _NearRepo(
   nearBrowserLocalStorage(getConfig(import.meta.env.MODE)),
-  import.meta.env.VITE_STAKING_CONTRACT_NAME
+  {
+    staking: import.meta.env.VITE_STAKING_CONTRACT_NAME,
+    faucet: import.meta.env.VITE_FAUCET_CONTRACT_NAME,
+  }
 )

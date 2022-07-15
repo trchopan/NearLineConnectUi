@@ -1,9 +1,9 @@
 import type {
   SafeParseError,
   SafeParseSuccess,
-  ZodAny,
   ZodEffects,
   ZodSchema,
+  ZodTypeAny,
 } from 'zod'
 import {pipe, identity} from 'fp-ts/function'
 import {Either, fold, isLeft, isRight, right, left} from 'fp-ts/Either'
@@ -11,12 +11,14 @@ import type {Option} from 'fp-ts/Option'
 import {isNull, isUndefined, isEqual, cloneDeep} from 'lodash'
 import {ValueFailure, NotParsedError} from './ValueFailure'
 
-export abstract class ValueObject<T> {
+export abstract class ValueObject<T, R = any> {
   protected abstract readonly name: string
-  protected abstract readonly schema: ZodSchema<T> | ZodEffects<ZodAny, T, any>
+  protected abstract readonly schema:
+    | ZodSchema<T>
+    | ZodEffects<ZodTypeAny, T, R>
   private _value?: Either<ValueFailure, T>
 
-  constructor(private _input: T) {}
+  constructor(private _input: R) {}
 
   protected parse() {
     const _parsed = this.schema.safeParse(this._input)
