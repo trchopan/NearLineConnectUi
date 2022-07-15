@@ -52,7 +52,7 @@
     notInited: () => ({
       onClick: () => nearLogin(),
       button: 'Login',
-      menuText: 'Login with NEAR Near',
+      menuText: 'Login with NEAR Wallet',
     }),
     loading: () => ({
       onClick: () => undefined,
@@ -62,12 +62,12 @@
     hasData: data => ({
       onClick: () => nearLogout(),
       button: data.accountId.getOrElse('error accountId'),
-      menuText: 'Logout NEAR Near',
+      menuText: 'Logout NEAR Wallet',
     }),
     hasError: err => ({
       onClick: () => nearLogin(),
       button: 'Login',
-      menuText: 'Login with NEAR Near',
+      menuText: 'Login with NEAR Wallet',
     }),
   })
 </script>
