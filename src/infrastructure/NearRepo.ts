@@ -75,17 +75,14 @@ export class _NearRepo implements INearRepo {
       TE.tryCatch(
         () =>
           new Promise((resolve, reject) => {
-            const account = this.wallet.account()
-            if (!account.accountId) throw 'account-not-found'
-            resolve(account)
+            if (!this.wallet.isSignedIn()) reject('not-signed-in')
+            resolve(this.wallet.account())
           }),
         err => {
           console.error(err)
           switch (err as string) {
-            case 'profile-not-exist':
-              return new NearError(NearErrorCode.ProfileNotExist, err)
-            case 'account-not-found':
-              return new NearError(NearErrorCode.AccountNotFound, err)
+            case 'not-signed-in':
+              return new NearError(NearErrorCode.NotSignedIn, err)
             default:
               return new NearError(NearErrorCode.ServerError, err)
           }

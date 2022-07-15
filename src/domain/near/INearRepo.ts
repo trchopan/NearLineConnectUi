@@ -6,8 +6,7 @@ export enum NearErrorCode {
   ServerError = 'ServerError',
   NetworkError = 'NetworkError',
   InitializeSDKError = 'InitializeSDKError',
-  ProfileNotExist = 'ProfileNotExist',
-  AccountNotFound = 'AccountNotFound',
+  NotSignedIn = 'NotSignedIn',
   UnexpectedLoggoutError = 'UnexpectedLoggoutError',
 }
 
