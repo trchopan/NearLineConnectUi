@@ -58,7 +58,7 @@
 
   $: $faucetInfo.onHasData(data => {
     faucetView.faucetBalance = thousandComma(
-      data.totalBalanceShare.getOrElse(new BN('0')).toString()
+      data.totalBalanceShare.getOrElse(new BN('0')).toString() + ' LINE'
     )
 
     faucetView.maxSharePerAccount = thousandComma(
@@ -138,17 +138,17 @@
   class="stats stats-vertical sm:stats-horizontal shadow sm:grid sm:grid-cols-2 my-5 w-full"
 >
   <div class="stat">
+    <div class="stat-title">Unique Accounts</div>
+    <div class="stat-value text-primary">{faucetView.uniqueAccounts}</div>
     <div class="stat-figure text-primary">
       <Icon src={User} theme="solid" class="h-7 w-7 color-gray-500" />
     </div>
-    <div class="stat-title">Unique Accounts</div>
-    <div class="stat-value text-primary">{faucetView.uniqueAccounts}</div>
   </div>
 
   <div class="stat">
-    <div class="stat-figure text-secondary">LINE</div>
     <div class="stat-title">Total Claimed</div>
     <div class="stat-value text-secondary">{faucetView.totalClaimed}</div>
+    <div class="stat-figure text-secondary">LINE</div>
   </div>
 </div>
 
