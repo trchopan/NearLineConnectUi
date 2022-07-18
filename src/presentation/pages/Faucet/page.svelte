@@ -1,18 +1,88 @@
 <script lang="ts">
   import {Icon} from '@steeze-ui/svelte-icon'
   import {User} from '@steeze-ui/heroicons'
-  import Interval from '../../components/Interval.svelte'
-  import StatCard from '../../components/StatCard.svelte'
-  import BigNumberInput from '../../components/BigNumberInput.svelte'
+  import {thousandComma} from '@/presentation/helpers'
+  import Interval from '@/presentation/components/Interval.svelte'
+  import StatCard from '@/presentation/components/StatCard.svelte'
+  import BigNumberInput from '@/presentation/components/BigNumberInput.svelte'
+  import {onMount} from 'svelte'
+  import {
+    getFaucetInfo,
+    faucetInfo,
+    faucetSharedBalance,
+    getFaucetSharedBalance,
+  } from '@/application/useNearFaucet'
+  import BN from 'bn.js'
+  import {
+    claimFaucetTokens,
+    signClaimFaucetTokens,
+  } from '@/application/useNearFungible'
+  import ErrorModal from '@/presentation/components/ErrorModal.svelte'
+  import type {NearError} from '@/domain/near/INearRepo'
 
   let token = 1_000
+
+  const refreshAction = () => {
+    getFaucetInfo()
+    getFaucetSharedBalance()
+  }
+
+  onMount(() => {
+    refreshAction()
+  })
+
+  interface FaucetView {
+    faucetBalance: string
+    maxSharePerAccount: string
+    uniqueAccounts: string
+    tokenClaimed: string
+    claimErrorModal: boolean
+    claimError: null | NearError
+  }
+
+  let faucetView: FaucetView = {
+    faucetBalance: 'Loading...',
+    maxSharePerAccount: 'Loading...',
+    uniqueAccounts: 'Loading...',
+    tokenClaimed: 'Loading...',
+    claimErrorModal: false,
+    claimError: null,
+  }
+
+  $: $faucetSharedBalance.onHasData(data => {
+    faucetView.tokenClaimed =
+      thousandComma(data.balance.getOrElse(new BN('0')).toString()) + ' LINE'
+  })
+
+  $: $faucetInfo.onHasData(data => {
+    faucetView.faucetBalance = thousandComma(
+      data.totalBalanceShare.getOrElse(new BN('0')).toString()
+    )
+
+    faucetView.maxSharePerAccount = thousandComma(
+      data.maxSharePerAccount.getOrElse(new BN('0')).toString()
+    )
+
+    faucetView.uniqueAccounts = thousandComma(
+      data.totalAccountShared.getOrElse(new BN('0')).toString()
+    )
+
+    faucetView.tokenClaimed = thousandComma(
+      data.totalShared.getOrElse(new BN('0')).toString()
+    )
+  })
+
+  $: $claimFaucetTokens.onHasError(err => {
+    faucetView.claimErrorModal = true
+    faucetView.claimError = err
+  })
 </script>
 
 <div class="flex items-center place-content-between">
   <h1 class="font-medium text-3xl">Faucet</h1>
   <Interval
     duration={15_000}
-    on:action={() => console.log('nanii Faucet')}
+    on:action={() => refreshAction()}
     tooltip="Refresh Contract information"
   />
 </div>
@@ -22,7 +92,7 @@
     titleAndValues={[
       {
         title: 'Faucet Ballance',
-        value: '89,400,231,432 LINE',
+        value: faucetView.faucetBalance,
       },
     ]}
     primary
@@ -31,8 +101,8 @@
   <StatCard
     titleAndValues={[
       {
-        title: 'Allow token to claim',
-        value: '123,456,789 LINE',
+        title: 'Token claimed',
+        value: faucetView.tokenClaimed,
       },
     ]}
   >
@@ -42,10 +112,22 @@
       </div>
     </div>
     <div>
-      <p class="my-1">
-        One account can get max 10,000 LINE. You cannot get more!
-      </p>
-      <button class="btn btn-secondary w-full">Claim</button>
+      {#if faucetView.maxSharePerAccount === 'Loading...'}
+        <p class="my-1">Loading...</p>
+      {:else}
+        <p class="my-1">
+          One account can get max {faucetView.maxSharePerAccount} LINE. You cannot
+          get more!
+        </p>
+      {/if}
+      <button
+        on:click|preventDefault={() => signClaimFaucetTokens(token.toString())}
+        class="btn btn-secondary w-full"
+        class:loading={$claimFaucetTokens.loading}
+        class:btn-disabled={$claimFaucetTokens.loading}
+      >
+        Claim
+      </button>
     </div>
   </StatCard>
 </div>
@@ -58,12 +140,20 @@
       <Icon src={User} theme="solid" class="h-7 w-7 color-gray-500" />
     </div>
     <div class="stat-title">Unique Accounts</div>
-    <div class="stat-value text-primary">5</div>
+    <div class="stat-value text-primary">{faucetView.uniqueAccounts}</div>
   </div>
 
   <div class="stat">
     <div class="stat-figure text-secondary">LINE</div>
     <div class="stat-title">Total Claimed</div>
-    <div class="stat-value text-secondary">2.6M</div>
+    <div class="stat-value text-secondary">{faucetView.tokenClaimed}</div>
   </div>
 </div>
+
+<ErrorModal
+  open={faucetView.claimErrorModal}
+  on:close={() => (faucetView.claimErrorModal = false)}
+>
+  Call `Claim token` to smart contract has Error. Please check that you has
+  login your NEAR wallet.
+</ErrorModal>

@@ -6,13 +6,14 @@
   import UnstakingTab from './UnstakingTab.svelte'
 
   enum Tab {
-    Unstake,
-    Stake,
+    Unstake = "Unstake",
+    Stake = "Stake",
   }
 
   let token = 1000
   let activeTab: Tab | null = Tab.Stake
 
+  // This is a hack for sync up the transiton between in-out
   const TAB_CHANGE_DURATION = 300
   const changeTab = (tab: Tab) => {
     activeTab = null
@@ -64,24 +65,20 @@
   <div class="card shadow">
     <div class="card-body">
       <div class="tabs tabs-boxed grid grid-cols-2">
+        {#each [Tab.Stake, Tab.Unstake] as tab}
         <span
-          on:click={() => changeTab(Tab.Stake)}
-          class={'tab tab-lg ' + (activeTab === Tab.Stake ? 'tab-active' : '')}
+          on:click={() => changeTab(tab)}
+          class:tab-active={activeTab === tab}
+          class="tab tab-lg"
         >
-          Stake
+          {tab}
         </span>
-        <span
-          on:click={() => changeTab(Tab.Unstake)}
-          class={'tab tab-lg ' +
-            (activeTab === Tab.Unstake ? 'tab-active' : '')}
-        >
-          Unstake
-        </span>
+        {/each}
       </div>
       {#if activeTab === Tab.Stake}
         <div
-          out:fly|local={{x: 300, duration: TAB_CHANGE_DURATION}}
-          in:fly|local={{x: -300, duration: TAB_CHANGE_DURATION}}
+          out:fly|local={{x: -300, duration: TAB_CHANGE_DURATION}}
+          in:fly|local={{x: 300, duration: TAB_CHANGE_DURATION}}
         >
           <StakingTab />
         </div>

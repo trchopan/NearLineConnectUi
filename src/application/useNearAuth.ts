@@ -12,9 +12,8 @@ export const nearProfile = writable(new Result<NearProfile, NearError>())
 export const authCheck = async () => {
   nearProfile.update(v => v.setLoading())
   await pipe(
-    NearRepo.initNear(),
+    NearRepo.getNearProfile(),
     T.delay(3000), // Simulate loading
-    TE.chainW(() => NearRepo.getNearProfile()),
     TE.fold(
       err => T.of(nearProfile.update(v => v.setError(err))),
       res => T.of(nearProfile.update(v => v.setValue(res)))

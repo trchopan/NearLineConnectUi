@@ -1,7 +1,7 @@
 <script lang="ts">
   import {createEventDispatcher, onDestroy} from 'svelte'
 
-  const dispatch = createEventDispatcher()
+  const dispatch = createEventDispatcher<{action: void}>()
 
   export let tooltip = ''
   export let duration = 10_000 // Milliseconds
