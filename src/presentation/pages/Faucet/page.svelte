@@ -36,6 +36,7 @@
     maxSharePerAccount: string
     uniqueAccounts: string
     tokenClaimed: string
+    totalClaimed: string
     claimErrorModal: boolean
     claimError: null | NearError
   }
@@ -45,6 +46,7 @@
     maxSharePerAccount: 'Loading...',
     uniqueAccounts: 'Loading...',
     tokenClaimed: 'Loading...',
+    totalClaimed: 'Loading...',
     claimErrorModal: false,
     claimError: null,
   }
@@ -67,7 +69,7 @@
       data.totalAccountShared.getOrElse(new BN('0')).toString()
     )
 
-    faucetView.tokenClaimed = thousandComma(
+    faucetView.totalClaimed = thousandComma(
       data.totalShared.getOrElse(new BN('0')).toString()
     )
   })
@@ -146,7 +148,7 @@
   <div class="stat">
     <div class="stat-figure text-secondary">LINE</div>
     <div class="stat-title">Total Claimed</div>
-    <div class="stat-value text-secondary">{faucetView.tokenClaimed}</div>
+    <div class="stat-value text-secondary">{faucetView.totalClaimed}</div>
   </div>
 </div>
 
