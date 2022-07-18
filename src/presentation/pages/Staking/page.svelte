@@ -125,14 +125,12 @@
     ]}
     primary
   />
-  {#if $nearProfile.notInited}
-    <div />
-  {:else if $nearProfile.loading}
+  {#if $nearProfile.loading}
     <div>Loading wallet...</div>
-  {:else if $nearProfile.hasError}
-    <button on:click={login} class="btn btn-black"
-      >Login NEAR to stake your token</button
-    >
+  {:else if $nearProfile.notInited || $nearProfile.hasError}
+    <button on:click={login} class="btn btn-black">
+      Login NEAR to stake your token
+    </button>
   {:else if $nearProfile.hasData}
     <StatCard
       titleAndValues={[
