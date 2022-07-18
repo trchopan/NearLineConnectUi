@@ -34,7 +34,7 @@ export class NearProfileMapper {
   }
 
   static toDomain(val: any): NearProfile {
-    const {accountId} = val
+    const accountId = val?.accountId
     const networkId = val?.connection?.networkId
     try {
       return new NearProfile(

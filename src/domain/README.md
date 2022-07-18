@@ -26,8 +26,8 @@ Example:
 The name
 
 Example: 
-- NearNetworkValue.ts
-- DisplayNameValue.ts
+- LiffProfile.ts
+- FaucetInfo.ts
 
 
 ## Repository Interface

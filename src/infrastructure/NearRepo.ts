@@ -1,3 +1,5 @@
+import BN from 'bn.js'
+import {baseDecode} from 'borsh'
 import {INearRepo, NearError, NearErrorCode} from '@/domain/near/INearRepo'
 import {
   Near,
@@ -5,6 +7,7 @@ import {
   WalletConnection,
   Contract,
   ConnectedWalletAccount,
+  utils,
 } from 'near-api-js'
 import * as TE from 'fp-ts/TaskEither'
 import * as E from 'fp-ts/Either'
@@ -17,6 +20,33 @@ import {
   FaucetSharedBalance,
   FaucetSharedBalanceMapper,
 } from '@/domain/near/FaucetSharedBalance'
+import {
+  Action,
+  createTransaction,
+  functionCall,
+} from 'near-api-js/lib/transaction'
+import {PublicKey} from 'near-api-js/lib/utils'
+import {
+  FungibleStorageBalance,
+  FungibleStorageBalanceMapper,
+} from '@/domain/near/FungibleStorageBalance'
+import * as O from 'fp-ts/lib/Option'
+
+export const STAKING_STORAGE_AMOUNT = '0.01'
+export const FT_STORAGE_AMOUNT = '0.01'
+export const ONE_YOCTO_NEAR = '0.000000000000000000000001'
+
+interface FunctionCallObj {
+  methodName: string
+  args?: object
+  gas?: string
+  deposit?: string
+}
+
+interface TransactionCall {
+  receiverId: string
+  functionCalls: FunctionCallObj[]
+}
 
 export const getConfig = (env: string): NearConfig => {
   switch (env) {
@@ -62,6 +92,7 @@ export class _NearRepo implements INearRepo {
   private wallet: WalletConnection
   private connectedWallet: ConnectedWalletAccount
   private stakingContract: Contract
+  private fungibleTokenContract: Contract
   private faucetContract: Contract
 
   private readonly stakingContractMethods: ContractMethods = {
@@ -79,11 +110,17 @@ export class _NearRepo implements INearRepo {
     changeMethods: ['get_token'],
   }
 
+  private readonly fungibleTokenContractMethods: ContractMethods = {
+    viewMethods: ['ft_metadata', 'ft_balance_of', 'storage_balance_of'],
+    changeMethods: ['ft_transfer', 'ft_transfer_call'],
+  }
+
   constructor(
     near: Near,
     contracts: {
       staking: string
       faucet: string
+      fungible: string
     }
   ) {
     const appKeyPrefix = null
@@ -93,6 +130,12 @@ export class _NearRepo implements INearRepo {
       this.wallet,
       near.connection,
       this.wallet.getAccountId()
+    )
+
+    this.fungibleTokenContract = new Contract(
+      this.wallet.account(),
+      contracts.fungible,
+      this.fungibleTokenContractMethods
     )
 
     this.stakingContract = new Contract(
@@ -181,5 +224,151 @@ export class _NearRepo implements INearRepo {
       ),
       TE.map(FaucetSharedBalanceMapper.toDomain)
     )
+  }
+
+  getFungibleStorageBalance(): TE.TaskEither<
+    NearError,
+    FungibleStorageBalance
+  > {
+    return pipe(
+      TE.tryCatch(
+        async () => {
+          // @ts-ignore:next-line
+          return await this.fungibleTokenContract.storage_balance_of({
+            account_id: this.wallet.getAccountId(),
+          })
+        },
+        err => {
+          console.error('getFungibleStorageBalance', err)
+          return new NearError(NearErrorCode.ContractError, err)
+        }
+      ),
+      TE.map(FungibleStorageBalanceMapper.toDomain)
+    )
+  }
+
+  claimFaucetTokens(amount: string): TE.TaskEither<NearError, void> {
+    const storageDepositTransaction: TransactionCall = {
+      receiverId: this.fungibleTokenContract.contractId,
+      functionCalls: [
+        {
+          methodName: 'storage_deposit',
+          args: {
+            account_id: this.wallet.getAccountId(),
+          },
+          gas: '10000000000000',
+          deposit: FT_STORAGE_AMOUNT,
+        },
+      ],
+    }
+    const getTokenTransaction: TransactionCall = {
+      receiverId: this.faucetContract.contractId,
+      functionCalls: [
+        {
+          methodName: 'get_token',
+          args: {
+            amount,
+          },
+          gas: '60000000000000',
+          deposit: FT_STORAGE_AMOUNT,
+        },
+      ],
+    }
+    return pipe(
+      this.getNearProfile(),
+      TE.chainW(() => this.getFungibleStorageBalance()),
+      TE.map(
+        m =>
+          m.balance
+            .fold<TransactionCall[]>(
+              () => [storageDepositTransaction], // Not yet has storage deposit
+              () => [] // Already has storage. No need to deposit.
+            )
+            .concat(getTokenTransaction) // Transactions: [storage_deposit?, get_token]
+      ),
+      TE.chainW(transactions =>
+        TE.tryCatch(
+          () => this.executeMultipleTransactions(transactions),
+          err => {
+            console.error('claimToken', err)
+            return new NearError(NearErrorCode.ContractError, err)
+          }
+        )
+      )
+    )
+  }
+
+  // FACADE FUNCTIONS
+  // TODO The below can be moved to another file but put it here for now
+
+  private async _createTransaction({
+    receiverId,
+    actions,
+    nonceOffset = 1,
+  }: {
+    receiverId: string
+    actions: Action[]
+    nonceOffset?: number
+  }) {
+    const connection = this.connectedWallet.connection
+    const accountId = this.wallet.getAccountId()
+    const localKey = await connection.signer.getPublicKey(
+      accountId,
+      connection.networkId
+    )
+    let accessKey = await this.connectedWallet.accessKeyForTransaction(
+      receiverId,
+      actions,
+      localKey
+    )
+    if (!accessKey) {
+      throw new Error(
+        `Cannot find matching key for transaction sent to ${receiverId}`
+      )
+    }
+
+    const block = await connection.provider.block({finality: 'final'})
+    const blockHash = baseDecode(block.header.hash)
+
+    const publicKey = PublicKey.from(accessKey.public_key)
+    const nonce = accessKey.access_key.nonce + nonceOffset
+
+    return createTransaction(
+      accountId,
+      publicKey,
+      receiverId,
+      nonce,
+      actions,
+      blockHash
+    )
+  }
+
+  private async executeMultipleTransactions(
+    transactions: TransactionCall[],
+    callbackUrl?: string,
+    meta?: string
+  ) {
+    const rawTransaction = await Promise.all(
+      transactions.map((t, i) => {
+        return this._createTransaction({
+          receiverId: t.receiverId,
+          nonceOffset: i + 1,
+          actions: t.functionCalls.map(fc =>
+            functionCall(
+              fc.methodName,
+              Buffer.from(JSON.stringify(fc.args)),
+              new BN(fc.gas || '100000000000000'),
+              new BN(utils.format.parseNearAmount(fc.deposit))
+            )
+          ),
+        })
+      })
+    )
+
+    return await this.wallet.requestSignTransactions({
+      transactions: rawTransaction,
+      callbackUrl,
+      meta,
+    })
   }
 }
