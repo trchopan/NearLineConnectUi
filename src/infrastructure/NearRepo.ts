@@ -39,6 +39,10 @@ import {
   StakingAccountInfo,
   StakingAccountInfoMapper,
 } from '@/domain/near/StakingAccountInfo'
+import {
+  FungibleAccountBalance,
+  FungibleAccountBalanceMapper,
+} from '@/domain/near/FungibleAccountBalance'
 
 export const STAKING_STORAGE_AMOUNT = '0.01'
 export const FT_STORAGE_AMOUNT = '0.01'
@@ -234,6 +238,27 @@ export class _NearRepo implements INearRepo {
     )
   }
 
+  getFungibleAccountBalance(): TE.TaskEither<
+    NearError,
+    FungibleAccountBalance
+  > {
+    return pipe(
+      TE.tryCatch(
+        async () => {
+          // @ts-ignore:next-line
+          return await this.fungibleTokenContract.ft_balance_of({
+            account_id: this.wallet.getAccountId(),
+          })
+        },
+        err => {
+          console.error('getFungibleBalance', err)
+          return new NearError(NearErrorCode.ContractError, err)
+        }
+      ),
+      TE.map(FungibleAccountBalanceMapper.toDomain)
+    )
+  }
+
   getFungibleStorageBalance(): TE.TaskEither<
     NearError,
     FungibleStorageBalance
@@ -320,9 +345,7 @@ export class _NearRepo implements INearRepo {
           return new NearError(NearErrorCode.ContractError, err)
         }
       ),
-      TE.map(v =>
-        StakingAccountInfoMapper.toDomain(v, this.wallet.getAccountId())
-      )
+      TE.map(v => StakingAccountInfoMapper.toDomain(v))
     )
   }
 

@@ -6,7 +6,10 @@ interface FaucetSharedBalanceProps {
   balance: BigNumberValue
 }
 
-export class FaucetSharedBalance extends Entity<FaucetSharedBalanceProps, ContractId> {
+export class FaucetSharedBalance extends Entity<
+  FaucetSharedBalanceProps,
+  ContractId
+> {
   constructor(props: FaucetSharedBalanceProps, _id: ContractId) {
     super(props, _id)
   }
@@ -24,14 +27,12 @@ export class FaucetSharedBalanceMapper {
   // static toDTO(): object {}
 
   static toDomain(balance: any): FaucetSharedBalance {
-    try {
-      return new FaucetSharedBalance(
-        {
-          balance: new BigNumberValue(balance),
-        },
-        new ContractId('')
-      )
-    } catch (err) {}
+    return new FaucetSharedBalance(
+      {
+        balance: new BigNumberValue(balance),
+      },
+      new ContractId('')
+    )
   }
 
   // TODO static toPersist(sp: FaucetSharedBalance) {}
