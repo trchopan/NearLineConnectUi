@@ -55,7 +55,6 @@ export class StakingAccountInfoMapper {
       reward,
       unstake_start_timestamp,
     } = v
-    console.log('>>>', v)
     try {
       return new StakingAccountInfo(
         {
