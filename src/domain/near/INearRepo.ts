@@ -4,6 +4,8 @@ import type {NearProfile} from './NearProfile'
 import type {FaucetInfo} from './FaucetInfo'
 import type {FaucetSharedBalance} from './FaucetSharedBalance'
 import type {FungibleStorageBalance} from './FungibleStorageBalance'
+import type {StakingPoolInfo} from './StakingPoolInfo'
+import type {StakingAccountInfo} from './StakingAccountInfo'
 
 export enum NearErrorCode {
   ContractError = 'ContractError',
@@ -78,4 +80,14 @@ export interface INearRepo {
    * Claim the token from faucet. Pay the deposit if the Storage is not yet paid.
    **/
   claimFaucetTokens(amount: string): TE.TaskEither<NearError, void>
+
+  /**
+   * Get the account information of the Staking Contract
+   **/
+  getStakingAccountInfo(): TE.TaskEither<NearError, StakingAccountInfo>
+
+  /**
+   * Get the pool information of the Staking Contract
+   **/
+  getStakingPoolInfo(): TE.TaskEither<NearError, StakingPoolInfo>
 }

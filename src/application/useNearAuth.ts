@@ -6,6 +6,7 @@ import {pipe} from 'fp-ts/function'
 import {writable} from 'svelte/store'
 import {Result} from '@/application/result'
 import type {NearError} from '@/domain/near/INearRepo'
+import {stakingAccountInfo} from './useStaking'
 
 export const nearProfile = writable(new Result<NearProfile, NearError>())
 
@@ -37,6 +38,7 @@ export const logout = async () => {
   nearProfile.update(v => v.setLoading())
   await pipe(
     TE.fromEither(NearRepo.logout()),
+    TE.chainW(() => TE.of(stakingAccountInfo.update(v => v.reset()))),
     T.delay(1000), // Simulate loading
     TE.fold(
       err => T.of(nearProfile.update(v => v.setError(err))),

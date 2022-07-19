@@ -31,6 +31,14 @@ import {
   FungibleStorageBalanceMapper,
 } from '@/domain/near/FungibleStorageBalance'
 import * as O from 'fp-ts/lib/Option'
+import {
+  StakingPoolInfo,
+  StakingPoolInfoMapper,
+} from '@/domain/near/StakingPoolInfo'
+import {
+  StakingAccountInfo,
+  StakingAccountInfoMapper,
+} from '@/domain/near/StakingAccountInfo'
 
 export const STAKING_STORAGE_AMOUNT = '0.01'
 export const FT_STORAGE_AMOUNT = '0.01'
@@ -298,8 +306,44 @@ export class _NearRepo implements INearRepo {
     )
   }
 
+  getStakingAccountInfo(): TE.TaskEither<NearError, StakingAccountInfo> {
+    return pipe(
+      TE.tryCatch(
+        async () => {
+          // @ts-ignore:next-line
+          return await this.stakingContract.get_account_info({
+            account_id: this.wallet.getAccountId(),
+          })
+        },
+        err => {
+          console.error('getStakingAccountInfo', err)
+          return new NearError(NearErrorCode.ContractError, err)
+        }
+      ),
+      TE.map(v =>
+        StakingAccountInfoMapper.toDomain(v, this.wallet.getAccountId())
+      )
+    )
+  }
+
+  getStakingPoolInfo(): TE.TaskEither<NearError, StakingPoolInfo> {
+    return pipe(
+      TE.tryCatch(
+        async () => {
+          // @ts-ignore:next-line
+          return await this.stakingContract.get_pool_info()
+        },
+        err => {
+          console.error('getStakingPoolInfo', err)
+          return new NearError(NearErrorCode.ContractError, err)
+        }
+      ),
+      TE.map(StakingPoolInfoMapper.toDomain)
+    )
+  }
+
   // FACADE FUNCTIONS
-  // TODO The below can be moved to another file but put it here for now
+  // TODO The below can be refactored to another file but put it here for now
 
   private async _createTransaction({
     receiverId,
