@@ -6,22 +6,23 @@
     stakingAccountInfo,
     getStakingPoolInfo,
     getStakingAccountInfo,
-  } from '@/application/useStaking'
-  import {thousandComma} from '@/presentation/helpers'
+  } from '@/application/useNearStaking'
+  import {getFungibleAccountBalance} from '@/application/useNearFungible'
+  import {dateFmt, dateTimeFmt, thousandComma} from '@/presentation/helpers'
   import BN from 'bn.js'
   import {onMount} from 'svelte'
   import {fly} from 'svelte/transition'
-  import Interval from '../../components/Interval.svelte'
-  import StatCard from '../../components/StatCard.svelte'
+  import Interval from '@/presentation/components/Interval.svelte'
+  import StatCard from '@/presentation/components/StatCard.svelte'
   import StakingTab from './StakingTab.svelte'
   import UnstakingTab from './UnstakingTab.svelte'
+  import {addSeconds} from 'date-fns'
 
   enum Tab {
     Unstake = 'Unstake',
     Stake = 'Stake',
   }
 
-  let token = 1000
   let activeTab: Tab | null = Tab.Stake
 
   // This is a hack for sync up the transiton between in-out
@@ -34,6 +35,7 @@
   }
 
   const refreshAction = () => {
+    $nearProfile.onHasData(() => getFungibleAccountBalance())
     $nearProfile.onHasData(() => getStakingAccountInfo())
     getStakingPoolInfo()
   }
@@ -54,25 +56,40 @@
     canClaim: false,
   }
 
+  interface StakingWithdrawView {
+    unstaked: string
+    unstakedAt: string
+    releaseDate: string
+  }
+
+  let stakingWithdrawView: StakingWithdrawView = {
+    unstaked: 'Loading...',
+    unstakedAt: 'Loading...',
+    releaseDate: 'Loading...',
+  }
+
   $: $stakingAccountInfo
-    .onNotInited(() => {
-      stakingAccountView.canClaim = false
-    })
-    .onLoading(() => {
-      stakingAccountView.canClaim = false
-    })
     .onHasData(data => {
+      //
       stakingAccountView.accountAmountStaked =
         thousandComma(data.stakeBalance.getOrElse(new BN('0')).toString()) +
         ' LINE'
       stakingAccountView.pendingReward =
-        thousandComma(data.unstakeBalance.getOrElse(new BN('0')).toString()) +
-        ' LINE'
+        thousandComma(data.reward.getOrElse(new BN('0')).toString()) + ' LINE'
       stakingAccountView.canClaim =
         data.canWithdraw &&
         data.unstakeBalance.getOrElse(new BN('0')).gt(new BN('0'))
+
+      //
+      stakingWithdrawView.unstaked =
+        thousandComma(data.unstakeBalance.getOrElse(new BN('0')).toString()) +
+        ' LINE'
+      const _unstakedAt = data.unstakeStartTimestamp.getOrElse(new Date(0))
+      stakingWithdrawView.unstakedAt = dateTimeFmt(_unstakedAt)
+      stakingWithdrawView.releaseDate = dateFmt(addSeconds(_unstakedAt, 43200))
     })
     .onHasError(err => {
+      // TODO Handle error
       stakingAccountView.accountAmountStaked = '0 LINE'
       stakingAccountView.pendingReward = '0 LINE'
       stakingAccountView.canClaim = false
@@ -188,6 +205,29 @@
         {/if}
       </div>
     </div>
+    <StatCard
+      titleAndValues={[
+        {
+          title: 'Withdraw',
+          value: stakingWithdrawView.unstaked,
+        },
+      ]}
+    >
+      <div>
+        <p class="my-1">Unstaked at {stakingWithdrawView.unstakedAt}</p>
+        <p class="my-1">
+          Release date (expected) {stakingWithdrawView.releaseDate}
+        </p>
+        <p class="my-1">You can withdraw unstaked token now.</p>
+        <button
+          class="btn btn-secondary w-full"
+          class:btn-disabled={!stakingAccountView.canClaim}
+          disabled={!stakingAccountView.canClaim}
+        >
+          Widthdraw
+        </button>
+      </div>
+    </StatCard>
   {/if}
 </div>
 
