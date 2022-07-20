@@ -6,6 +6,10 @@
     stakingAccountInfo,
     getStakingPoolInfo,
     getStakingAccountInfo,
+    signHavestFromStakingPool,
+    signWithdrawFromStakingPool,
+    havestFromStakingPool,
+    withdrawFromStakingPool,
   } from '@/application/useNearStaking'
   import {getFungibleAccountBalance} from '@/application/useNearFungible'
   import {dateFmt, dateTimeFmt, thousandComma} from '@/presentation/helpers'
@@ -117,8 +121,7 @@
       thousandComma(data.totalStakeBalance.getOrElse(new BN(0)).toString()) +
       ' LINE'
     stakingStatView.totalRewardEarned =
-      thousandComma(data.totalReward.getOrElse(new BN(0)).toString()) +
-      ' LINE'
+      thousandComma(data.totalReward.getOrElse(new BN(0)).toString()) + ' LINE'
   })
 </script>
 
@@ -165,9 +168,10 @@
           You can claim reward when reward balance greater than 1 LINE
         </p>
         <button
+          on:click={() => signHavestFromStakingPool()}
           class="btn btn-secondary w-full"
           class:btn-disabled={!stakingAccountView.canClaim}
-          disabled={!stakingAccountView.canClaim}
+          class:loading={$havestFromStakingPool.loading}
         >
           Claim
         </button>
@@ -219,9 +223,10 @@
         </p>
         <p class="my-1">You can withdraw unstaked token now.</p>
         <button
+          on:click={() => signWithdrawFromStakingPool()}
           class="btn btn-secondary w-full"
           class:btn-disabled={!stakingAccountView.canClaim}
-          disabled={!stakingAccountView.canClaim}
+          class:loading={$withdrawFromStakingPool.loading}
         >
           Widthdraw
         </button>
