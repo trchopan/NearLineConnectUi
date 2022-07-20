@@ -3,9 +3,12 @@
   import {thousandComma} from '@/presentation/helpers'
   import BigNumberInput from '@/presentation/components/BigNumberInput.svelte'
   import BN from 'bn.js'
-  import {stakeFungibleToken, signStakeFungibleToken} from '@/application/useNearStaking'
+  import {
+    stakeFungibleToken,
+    signStakeFungibleToken,
+  } from '@/application/useNearStaking'
 
-  let token = new BN('0')
+  let token: BN | undefined = undefined
 
   interface StakeTabView {
     accountBalanceText: string
@@ -31,7 +34,16 @@
       <span>Balance:</span>
       <span>{stakeTabView.accountBalanceText}</span>
     </div>
-    <BigNumberInput bind:value={token} />
+    <div class="flex items-center">
+      <button
+        on:click|preventDefault={() =>
+          (token = stakeTabView.accountBalanceNumber)}
+        class="btn btn-sm btn-ghost mr-2"
+      >
+        Max
+      </button>
+      <BigNumberInput bind:value={token} />
+    </div>
   </div>
 </div>
 <div>
