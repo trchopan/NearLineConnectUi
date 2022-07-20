@@ -54,3 +54,17 @@ export const signStakeFungibleToken = async (amount: BN) => {
     )
   )()
 }
+
+export const unstakeFromStakingPool = writable(new Result<void, NearError>())
+
+export const signUnstakeFromStakingPool = async (amount: BN) => {
+  unstakeFromStakingPool.update(v => v.setLoading())
+  await pipe(
+    NearRepo.unstakeFromStakingPool(amount.toString()),
+    T.delay(3000), // Simulate loading
+    TE.fold(
+      err => T.of(unstakeFromStakingPool.update(v => v.setError(err))),
+      res => T.of(unstakeFromStakingPool.update(v => v.setValue(res)))
+    )
+  )()
+}

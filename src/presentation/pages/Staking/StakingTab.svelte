@@ -17,11 +17,11 @@
 
   let stakeTabView: StakeTabView = {
     accountBalanceText: 'Loading...',
-    accountBalanceNumber: new BN('0'),
+    accountBalanceNumber: new BN(0),
   }
 
   $: $fungibleAccountBalance.onHasData(data => {
-    const _balance = data.balance.getOrElse(new BN('0'))
+    const _balance = data.balance.getOrElse(new BN(0))
     stakeTabView.accountBalanceText =
       thousandComma(_balance.toString()) + ' LINE'
     stakeTabView.accountBalanceNumber = _balance
@@ -29,6 +29,12 @@
 
   const maxToken = () => {
     token = stakeTabView.accountBalanceNumber
+  }
+
+  $: {
+    if (token?.gt(stakeTabView.accountBalanceNumber)) {
+      maxToken()
+    }
   }
 </script>
 
@@ -58,7 +64,7 @@
     on:click|preventDefault={() => signStakeFungibleToken(token)}
     class="btn btn-secondary w-full"
     class:loading={$stakeFungibleToken.loading}
-    class:btn-disabled={$stakeFungibleToken.loading}
+    class:btn-disabled={$stakeFungibleToken.loading || !token?.gt(new BN(0))}
   >
     Stake
   </button>
