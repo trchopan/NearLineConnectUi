@@ -3,18 +3,17 @@
   import {onMount} from 'svelte'
 
   export let value: BN | undefined = undefined
+  export let initial: BN | undefined = undefined
 
   let numberTxt = ''
 
   $: {
-    numberTxt = String(value ?? '')
+    numberTxt = String(initial ?? '')
   }
 
   $: {
-    numberTxt = numberTxt.replace(/^0/, '')
-    if (numberTxt !== '') {
-      value = new BN(numberTxt.replaceAll(',', ''))
-    }
+    numberTxt = numberTxt.replace(/^0/, '').replace(/\..*/, '')
+    value = new BN(numberTxt.replaceAll(',', '').replaceAll(/[^\d]/g, ''))
   }
 
   onMount(() => {
