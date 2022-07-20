@@ -77,8 +77,7 @@
       stakingAccountView.pendingReward =
         thousandComma(data.reward.getOrElse(new BN('0')).toString()) + ' LINE'
       stakingAccountView.canClaim =
-        data.canWithdraw &&
-        data.unstakeBalance.getOrElse(new BN('0')).gt(new BN('0'))
+        data.canWithdraw && data.reward.getOrElse(new BN('0')).gt(new BN('0'))
 
       //
       stakingWithdrawView.unstaked =
