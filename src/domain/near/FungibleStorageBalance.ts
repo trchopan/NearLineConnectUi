@@ -6,7 +6,10 @@ interface FungibleStorageBalanceProps {
   balance: BigNumberValue
 }
 
-export class FungibleStorageBalance extends Entity<FungibleStorageBalanceProps, ContractId> {
+export class FungibleStorageBalance extends Entity<
+  FungibleStorageBalanceProps,
+  ContractId
+> {
   constructor(props: FungibleStorageBalanceProps, _id: ContractId) {
     super(props, _id)
   }
@@ -24,14 +27,12 @@ export class FungibleStorageBalanceMapper {
   // static toDTO(): object {}
 
   static toDomain(balance: any): FungibleStorageBalance {
-    try {
-      return new FungibleStorageBalance(
-        {
-          balance: new BigNumberValue(balance),
-        },
-        new ContractId('')
-      )
-    } catch (err) {}
+    return new FungibleStorageBalance(
+      {
+        balance: new BigNumberValue(balance),
+      },
+      new ContractId('')
+    )
   }
 
   // TODO static toPersist(sp: FungibleStorageBalance) {}

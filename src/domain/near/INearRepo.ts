@@ -6,6 +6,7 @@ import type {FaucetSharedBalance} from './FaucetSharedBalance'
 import type {FungibleStorageBalance} from './FungibleStorageBalance'
 import type {StakingPoolInfo} from './StakingPoolInfo'
 import type {StakingAccountInfo} from './StakingAccountInfo'
+import type { FungibleAccountBalance } from './FungibleAccountBalance'
 
 export enum NearErrorCode {
   ContractError = 'ContractError',
@@ -70,6 +71,11 @@ export interface INearRepo {
    * Get the current wallet shared balance of the Faucet Contract
    **/
   getFaucetSharedBalance(): TE.TaskEither<NearError, FaucetSharedBalance>
+
+  /**
+   * Get the account balance of the Fungible Contract
+   **/
+  getFungibleAccountBalance(): TE.TaskEither<NearError, FungibleAccountBalance>
 
   /**
    * Get the storage balance of the Fungible Contract

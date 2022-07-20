@@ -47,8 +47,9 @@ export class StakingAccountInfo extends Entity<
 export class StakingAccountInfoMapper {
   // static toDTO(): object {}
 
-  static toDomain(v: any, nearId: string): StakingAccountInfo {
+  static toDomain(v: any): StakingAccountInfo {
     const {
+      account_id,
       can_withdraw,
       stake_balance,
       unstake_balance,
@@ -66,7 +67,7 @@ export class StakingAccountInfoMapper {
             unstake_start_timestamp
           ),
         },
-        new NearId(nearId)
+        new NearId(account_id)
       )
     } catch (err) {}
   }

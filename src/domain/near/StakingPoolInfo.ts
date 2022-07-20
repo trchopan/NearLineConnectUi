@@ -51,18 +51,16 @@ export class StakingPoolInfoMapper {
       total_stake_balance,
       total_stakers,
     } = v
-    try {
-      return new StakingPoolInfo(
-        {
-          isPaused: is_paused,
-          totalPaidRewardBalance: new BigNumberValue(total_paid_reward_balance),
-          totalReward: new BigNumberValue(total_reward),
-          totalStakeBalance: new BigNumberValue(total_stake_balance),
-          totalStakers: new BigNumberValue(total_stakers),
-        },
-        new ContractId('')
-      )
-    } catch (err) {}
+    return new StakingPoolInfo(
+      {
+        isPaused: is_paused,
+        totalPaidRewardBalance: new BigNumberValue(total_paid_reward_balance),
+        totalReward: new BigNumberValue(total_reward),
+        totalStakeBalance: new BigNumberValue(total_stake_balance),
+        totalStakers: new BigNumberValue(total_stakers),
+      },
+      new ContractId('')
+    )
   }
 
   // TODO static toPersist(sp: StakingPoolInfo) {}
