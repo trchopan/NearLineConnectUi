@@ -2,20 +2,19 @@
   import BN from 'bn.js'
   import {onMount} from 'svelte'
 
-  export let value: BN = new BN('0')
-  export let initial: number | undefined = undefined
+  export let value: BN | undefined = undefined
 
   let numberTxt = ''
 
   $: {
-    if (initial !== undefined) {
-      numberTxt = String(initial)
-    }
+    numberTxt = String(value ?? '')
   }
 
   $: {
     numberTxt = numberTxt.replace(/^0/, '')
-    value = new BN(numberTxt.replaceAll(',', ''))
+    if (numberTxt !== '') {
+      value = new BN(numberTxt.replaceAll(',', ''))
+    }
   }
 
   onMount(() => {

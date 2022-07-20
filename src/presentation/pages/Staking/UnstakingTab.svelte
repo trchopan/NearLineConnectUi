@@ -1,7 +1,8 @@
 <script lang="ts">
-  import BigNumberInput from '../../components/BigNumberInput.svelte'
+  import type BN from 'bn.js'
+  import BigNumberInput from '@/presentation/components/BigNumberInput.svelte'
 
-  let token = 0
+  let token: BN | undefined = undefined
 </script>
 
 <div class="form-control w-full">

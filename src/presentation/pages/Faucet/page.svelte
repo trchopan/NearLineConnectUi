@@ -20,7 +20,7 @@
   import ErrorModal from '@/presentation/components/ErrorModal.svelte'
   import type {NearError} from '@/domain/near/INearRepo'
 
-  let token = new BN('1000')
+  let token: BN | undefined = undefined
 
   const refreshAction = () => {
     getFaucetInfo()
