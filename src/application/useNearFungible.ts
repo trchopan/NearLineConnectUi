@@ -6,6 +6,7 @@ import {writable} from 'svelte/store'
 import {Result} from '@/application/result'
 import type {NearError} from '@/domain/near/INearRepo'
 import type {FungibleAccountBalance} from '@/domain/near/FungibleAccountBalance'
+import type BN from 'bn.js'
 
 export const fungibleAccountBalance = writable(
   new Result<FungibleAccountBalance, NearError>()
@@ -25,10 +26,10 @@ export const getFungibleAccountBalance= async () => {
 
 export const claimFaucetTokens = writable(new Result<void, NearError>())
 
-export const signClaimFaucetTokens = async (amount: string) => {
+export const signClaimFaucetTokens = async (amount: BN) => {
   claimFaucetTokens.update(v => v.setLoading())
   await pipe(
-    NearRepo.claimFaucetTokens(amount),
+    NearRepo.claimFaucetTokens(amount.toString()),
     T.delay(3000), // Simulate loading
     TE.fold(
       err => T.of(claimFaucetTokens.update(v => v.setError(err))),

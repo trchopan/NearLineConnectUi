@@ -3,7 +3,8 @@ import {BigNumberValue} from './BigNumberValue'
 import {ContractId} from './ContractId'
 
 interface FungibleStorageBalanceProps {
-  balance: BigNumberValue
+  total: BigNumberValue
+  avaiable: BigNumberValue
 }
 
 export class FungibleStorageBalance extends Entity<
@@ -18,18 +19,24 @@ export class FungibleStorageBalance extends Entity<
     return this._id
   }
 
-  get balance() {
-    return this.props.balance
+  get total() {
+    return this.props.total
+  }
+
+  get avaiable() {
+    return this.props.avaiable
   }
 }
 
 export class FungibleStorageBalanceMapper {
   // static toDTO(): object {}
 
-  static toDomain(balance: any): FungibleStorageBalance {
+  static toDomain(v: any): FungibleStorageBalance {
+    const {total, avaiable} = v;
     return new FungibleStorageBalance(
       {
-        balance: new BigNumberValue(balance),
+        total: new BigNumberValue(total),
+        avaiable: new BigNumberValue(avaiable),
       },
       new ContractId('')
     )

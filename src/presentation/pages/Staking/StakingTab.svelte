@@ -3,8 +3,9 @@
   import {thousandComma} from '@/presentation/helpers'
   import BigNumberInput from '@/presentation/components/BigNumberInput.svelte'
   import BN from 'bn.js'
+  import {stakeFungibleToken, signStakeFungibleToken} from '@/application/useNearStaking'
 
-  let token = 0
+  let token = new BN('0')
 
   interface StakeTabView {
     accountBalanceText: string
@@ -38,5 +39,12 @@
     Unstaked tokens will be made available pending a release period of ~12hrs (1
     epochs).
   </p>
-  <button class="btn btn-secondary w-full">Stake</button>
+  <button
+    on:click|preventDefault={() => signStakeFungibleToken(token)}
+    class="btn btn-secondary w-full"
+    class:loading={$stakeFungibleToken.loading}
+    class:btn-disabled={$stakeFungibleToken.loading}
+  >
+    Stake
+  </button>
 </div>
