@@ -1,28 +1,21 @@
 <script lang="ts">
   import BN from 'bn.js'
-  import {onMount} from 'svelte'
+  import {thousandComma} from '../helpers'
 
   export let value: BN | undefined = undefined
-  export let initial: BN | undefined = undefined
 
   let numberTxt = ''
 
   $: {
-    numberTxt = String(initial ?? '')
+    numberTxt = thousandComma(value.toString())
   }
 
   $: {
-    numberTxt = numberTxt.replace(/^0/, '').replace(/\..*/, '')
-    value = new BN(numberTxt.replaceAll(',', '').replaceAll(/[^\d]/g, ''))
+    numberTxt = thousandComma(
+      numberTxt.replace(/^0/, '').replace(/\..*/, '').replaceAll(/[^\d]/g, '')
+    )
+    value = new BN(numberTxt.replaceAll(',', ''))
   }
-
-  onMount(() => {
-    // @ts-ignore:next-line
-    easyNumberSeparator({
-      selector: '.number-separator',
-      separator: ',',
-    })
-  })
 </script>
 
 <input
