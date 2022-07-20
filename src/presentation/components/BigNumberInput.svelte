@@ -1,7 +1,8 @@
 <script lang="ts">
+  import BN from 'bn.js'
   import {onMount} from 'svelte'
 
-  export let value: number = 0
+  export let value: BN = new BN('0')
   export let initial: number | undefined = undefined
 
   let numberTxt = ''
@@ -14,7 +15,7 @@
 
   $: {
     numberTxt = numberTxt.replace(/^0/, '')
-    value = parseFloat(numberTxt.replaceAll(',', ''))
+    value = new BN(numberTxt.replaceAll(',', ''))
   }
 
   onMount(() => {

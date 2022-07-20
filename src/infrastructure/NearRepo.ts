@@ -310,20 +310,19 @@ export class _NearRepo implements INearRepo {
     return pipe(
       this.getNearProfile(),
       TE.chainW(() => this.getFungibleStorageBalance()),
-      TE.map(
-        m =>
-          m.balance
-            .fold<TransactionCall[]>(
-              () => [storageDepositTransaction], // Not yet has storage deposit
-              () => [] // Already has storage. No need to deposit.
-            )
-            .concat(getTokenTransaction) // Transactions: [storage_deposit?, get_token]
-      ),
+      TE.map(m => {
+        return m.total
+          .fold<TransactionCall[]>(
+            () => [storageDepositTransaction], // Not yet has storage deposit
+            () => [] // Already has storage. No need to deposit.
+          )
+          .concat(getTokenTransaction) // Transactions: [storage_deposit?, get_token]
+      }),
       TE.chainW(transactions =>
         TE.tryCatch(
           () => this.executeMultipleTransactions(transactions),
           err => {
-            console.error('claimToken', err)
+            console.error('claimFaucetTokens', err)
             return new NearError(NearErrorCode.ContractError, err)
           }
         )
@@ -362,6 +361,59 @@ export class _NearRepo implements INearRepo {
         }
       ),
       TE.map(StakingPoolInfoMapper.toDomain)
+    )
+  }
+
+  stakeFungibleToken(amount: string): TE.TaskEither<NearError, void> {
+    const storageDepositTransaction: TransactionCall = {
+      receiverId: this.stakingContract.contractId,
+      functionCalls: [
+        {
+          methodName: 'storage_deposite',
+          args: {
+            account_id: this.wallet.getAccountId(),
+          },
+          gas: '10000000000000',
+          deposit: STAKING_STORAGE_AMOUNT,
+        },
+      ],
+    }
+    const fungibleTokenTransferTransaction: TransactionCall = {
+      receiverId: this.fungibleTokenContract.contractId,
+      functionCalls: [
+        {
+          methodName: 'ft_transfer_call',
+          args: {
+            receiver_id: this.stakingContract.contractId,
+            amount,
+            msg: '',
+          },
+          gas: '60000000000000',
+          deposit: ONE_YOCTO_NEAR,
+        },
+      ],
+    }
+    return pipe(
+      this.getNearProfile(),
+      TE.chainW(() => this.getFungibleStorageBalance()),
+      TE.map(
+        m =>
+          m.total
+            .fold<TransactionCall[]>(
+              () => [storageDepositTransaction], // Not yet has storage deposit
+              () => [] // Already has storage. No need to deposit.
+            )
+            .concat(fungibleTokenTransferTransaction) // Transactions: [storage_deposit?, get_token]
+      ),
+      TE.chainW(transactions =>
+        TE.tryCatch(
+          () => this.executeMultipleTransactions(transactions),
+          err => {
+            console.error('stakeFungibleToken', err)
+            return new NearError(NearErrorCode.ContractError, err)
+          }
+        )
+      )
     )
   }
 

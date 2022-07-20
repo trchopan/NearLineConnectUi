@@ -20,7 +20,7 @@
   import ErrorModal from '@/presentation/components/ErrorModal.svelte'
   import type {NearError} from '@/domain/near/INearRepo'
 
-  let token = 1_000
+  let token = new BN('1000')
 
   const refreshAction = () => {
     getFaucetInfo()
@@ -123,7 +123,7 @@
         </p>
       {/if}
       <button
-        on:click|preventDefault={() => signClaimFaucetTokens(token.toString())}
+        on:click|preventDefault={() => signClaimFaucetTokens(token)}
         class="btn btn-secondary w-full"
         class:loading={$claimFaucetTokens.loading}
         class:btn-disabled={$claimFaucetTokens.loading}
