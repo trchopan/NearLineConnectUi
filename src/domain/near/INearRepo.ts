@@ -107,4 +107,14 @@ export interface INearRepo {
    * Unstake from the Staking contract to the current wallet.
    **/
   unstakeFromStakingPool(amount: string): TE.TaskEither<NearError, void>
+
+  /**
+   * Havest/Claim from the Staking contract to the current wallet.
+   **/
+  havestFromStakingPool(): TE.TaskEither<NearError, void>
+
+  /**
+   * Withdraw fungible tokens from the Staking contract to the current wallet.
+   **/
+  withdrawFromStakingPool(): TE.TaskEither<NearError, void>
 }

@@ -435,6 +435,42 @@ export class _NearRepo implements INearRepo {
     )
   }
 
+  havestFromStakingPool(): TE.TaskEither<NearError, void> {
+    return pipe(
+      this.getNearProfile(),
+      TE.chainW(() =>
+        TE.tryCatch(
+          async () => {
+            // @ts-ignore:next-line
+            await this.stakingContract.harvest({}, 60000000000000, 1)
+          },
+          err => {
+            console.error('stakeFungibleToken', err)
+            return new NearError(NearErrorCode.ContractError, err)
+          }
+        )
+      )
+    )
+  }
+
+  withdrawFromStakingPool(): TE.TaskEither<NearError, void> {
+    return pipe(
+      this.getNearProfile(),
+      TE.chainW(() =>
+        TE.tryCatch(
+          async () => {
+            // @ts-ignore:next-line
+            await this.stakingContract.withdraw({}, 60000000000000, 1)
+          },
+          err => {
+            console.error('stakeFungibleToken', err)
+            return new NearError(NearErrorCode.ContractError, err)
+          }
+        )
+      )
+    )
+  }
+
   // FACADE FUNCTIONS
   // TODO The below can be refactored to another file but put it here for now
 

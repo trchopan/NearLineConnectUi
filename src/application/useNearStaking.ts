@@ -68,3 +68,31 @@ export const signUnstakeFromStakingPool = async (amount: BN) => {
     )
   )()
 }
+
+export const havestFromStakingPool = writable(new Result<void, NearError>())
+
+export const signHavestFromStakingPool = async () => {
+  havestFromStakingPool.update(v => v.setLoading())
+  await pipe(
+    NearRepo.havestFromStakingPool(),
+    T.delay(3000), // Simulate loading
+    TE.fold(
+      err => T.of(havestFromStakingPool.update(v => v.setError(err))),
+      res => T.of(havestFromStakingPool.update(v => v.setValue(res)))
+    )
+  )()
+}
+
+export const withdrawFromStakingPool = writable(new Result<void, NearError>())
+
+export const signWithdrawFromStakingPool = async () => {
+  withdrawFromStakingPool.update(v => v.setLoading())
+  await pipe(
+    NearRepo.withdrawFromStakingPool(),
+    T.delay(3000), // Simulate loading
+    TE.fold(
+      err => T.of(withdrawFromStakingPool.update(v => v.setError(err))),
+      res => T.of(withdrawFromStakingPool.update(v => v.setValue(res)))
+    )
+  )()
+}
