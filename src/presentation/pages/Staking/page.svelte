@@ -72,17 +72,16 @@
     .onHasData(data => {
       //
       stakingAccountView.accountAmountStaked =
-        thousandComma(data.stakeBalance.getOrElse(new BN('0')).toString()) +
+        thousandComma(data.stakeBalance.getOrElse(new BN(0)).toString()) +
         ' LINE'
       stakingAccountView.pendingReward =
-        thousandComma(data.reward.getOrElse(new BN('0')).toString()) + ' LINE'
+        thousandComma(data.reward.getOrElse(new BN(0)).toString()) + ' LINE'
       stakingAccountView.canClaim =
-        data.canWithdraw &&
-        data.unstakeBalance.getOrElse(new BN('0')).gt(new BN('0'))
+        data.canWithdraw && data.reward.getOrElse(new BN(0)).gt(new BN(0))
 
       //
       stakingWithdrawView.unstaked =
-        thousandComma(data.unstakeBalance.getOrElse(new BN('0')).toString()) +
+        thousandComma(data.unstakeBalance.getOrElse(new BN(0)).toString()) +
         ' LINE'
       const _unstakedAt = data.unstakeStartTimestamp.getOrElse(new Date(0))
       stakingWithdrawView.unstakedAt = dateTimeFmt(_unstakedAt)
@@ -112,13 +111,13 @@
   $: $stakingPoolInfo.onHasData(data => {
     stakingStatView.isPoolActive = data.isPaused ? 'Inactive' : 'Active'
     stakingStatView.uniqueStakers = thousandComma(
-      data.totalStakers.getOrElse(new BN('0')).toString()
+      data.totalStakers.getOrElse(new BN(0)).toString()
     )
     stakingStatView.totalStaked =
-      thousandComma(data.totalStakeBalance.getOrElse(new BN('0')).toString()) +
+      thousandComma(data.totalStakeBalance.getOrElse(new BN(0)).toString()) +
       ' LINE'
     stakingStatView.totalRewardEarned =
-      thousandComma(data.totalReward.getOrElse(new BN('0')).toString()) +
+      thousandComma(data.totalReward.getOrElse(new BN(0)).toString()) +
       ' LINE'
   })
 </script>

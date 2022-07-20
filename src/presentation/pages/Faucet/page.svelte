@@ -53,24 +53,24 @@
 
   $: $faucetSharedBalance.onHasData(data => {
     faucetView.tokenClaimed =
-      thousandComma(data.balance.getOrElse(new BN('0')).toString()) + ' LINE'
+      thousandComma(data.balance.getOrElse(new BN(0)).toString()) + ' LINE'
   })
 
   $: $faucetInfo.onHasData(data => {
     faucetView.faucetBalance = thousandComma(
-      data.totalBalanceShare.getOrElse(new BN('0')).toString() + ' LINE'
+      data.totalBalanceShare.getOrElse(new BN(0)).toString() + ' LINE'
     )
 
     faucetView.maxSharePerAccount = thousandComma(
-      data.maxSharePerAccount.getOrElse(new BN('0')).toString()
+      data.maxSharePerAccount.getOrElse(new BN(0)).toString()
     )
 
     faucetView.uniqueAccounts = thousandComma(
-      data.totalAccountShared.getOrElse(new BN('0')).toString()
+      data.totalAccountShared.getOrElse(new BN(0)).toString()
     )
 
     faucetView.totalClaimed = thousandComma(
-      data.totalShared.getOrElse(new BN('0')).toString()
+      data.totalShared.getOrElse(new BN(0)).toString()
     )
   })
 

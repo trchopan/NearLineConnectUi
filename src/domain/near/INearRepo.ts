@@ -102,4 +102,9 @@ export interface INearRepo {
    * Pay the deposit if the Storage is not yet paid.
    **/
   stakeFungibleToken(amount: string): TE.TaskEither<NearError, void>
+
+  /**
+   * Unstake from the Staking contract to the current wallet.
+   **/
+  unstakeFromStakingPool(amount: string): TE.TaskEither<NearError, void>
 }
