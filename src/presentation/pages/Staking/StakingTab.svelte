@@ -26,6 +26,10 @@
       thousandComma(_balance.toString()) + ' LINE'
     stakeTabView.accountBalanceNumber = _balance
   })
+
+  const maxToken = () => {
+    token = stakeTabView.accountBalanceNumber
+  }
 </script>
 
 <div class="form-control w-full">
@@ -36,8 +40,7 @@
     </div>
     <div class="flex items-center">
       <button
-        on:click|preventDefault={() =>
-          (token = stakeTabView.accountBalanceNumber)}
+        on:click|preventDefault={() => maxToken()}
         class="btn btn-sm btn-ghost mr-2"
       >
         Max
