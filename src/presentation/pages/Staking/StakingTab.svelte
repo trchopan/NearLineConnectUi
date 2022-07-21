@@ -40,7 +40,7 @@
 
 <div class="form-control w-full">
   <div>
-    <div class="flex my-2 gap-3 place-content-between">
+    <div class="flex gap-3 place-content-between">
       <span>Balance:</span>
       <span>{stakeTabView.accountBalanceText}</span>
     </div>
@@ -55,11 +55,8 @@
     </div>
   </div>
 </div>
-<div>
-  <p class="my-1">
-    Unstaked tokens will be made available pending a release period of ~12hrs (1
-    epochs).
-  </p>
+
+<div class="mt-3">
   <button
     on:click|preventDefault={() => signStakeFungibleToken(token)}
     class="btn btn-secondary w-full"
