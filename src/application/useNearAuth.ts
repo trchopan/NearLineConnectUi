@@ -11,6 +11,10 @@ import {
   fungibleAccountBalance,
   getFungibleAccountBalance,
 } from './useNearFungible'
+import {
+  getMyNonFungibleTokensInfo,
+  myNonfungibleTokenInfo,
+} from './useNearNonfungible'
 
 export const nearProfile = writable(new Result<NearProfile, NearError>())
 
@@ -24,6 +28,7 @@ export const authCheck = async () => {
       res => {
         getStakingAccountInfo()
         getFungibleAccountBalance()
+        getMyNonFungibleTokensInfo()
         return T.of(nearProfile.update(v => v.setValue(res)))
       }
     )
@@ -52,6 +57,7 @@ export const logout = async () => {
       _ => {
         stakingAccountInfo.update(v => v.reset())
         fungibleAccountBalance.update(v => v.reset())
+        myNonfungibleTokenInfo.update(v => v.reset())
         return T.of(nearProfile.update(v => v.reset()))
       }
     )

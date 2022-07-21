@@ -62,7 +62,7 @@ export abstract class ValueObject<T, R = any> {
     return pipe(
       this.val,
       fold(v => {
-        console.error('getOrCrash throws')
+        console.error(`${this.name}: getOrCrash throws`)
         throw v
       }, identity)
     )

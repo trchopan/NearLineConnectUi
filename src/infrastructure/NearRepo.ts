@@ -30,7 +30,6 @@ import {
   FungibleStorageBalance,
   FungibleStorageBalanceMapper,
 } from '@/domain/near/FungibleStorageBalance'
-import * as O from 'fp-ts/lib/Option'
 import {
   StakingPoolInfo,
   StakingPoolInfoMapper,
@@ -43,6 +42,16 @@ import {
   FungibleAccountBalance,
   FungibleAccountBalanceMapper,
 } from '@/domain/near/FungibleAccountBalance'
+import {NearId} from '@/domain/near/NearId'
+import {
+  NonfungibleInfoList,
+  NonfungibleInfoListMapper,
+} from '@/domain/near/NonfungibleInfoList'
+import {
+  NonfungibleInfo,
+  NonfungibleInfoMapper,
+} from '@/domain/near/NonfungibleInfo'
+import {EntityCorrupted} from '@/domain/core/Entity'
 
 export const STAKING_STORAGE_AMOUNT = '0.01'
 export const FT_STORAGE_AMOUNT = '0.01'
@@ -106,6 +115,7 @@ export class _NearRepo implements INearRepo {
   private stakingContract: Contract
   private fungibleTokenContract: Contract
   private faucetContract: Contract
+  private nonfungibleTokenContract: Contract
 
   private readonly stakingContractMethods: ContractMethods = {
     viewMethods: [
@@ -127,12 +137,18 @@ export class _NearRepo implements INearRepo {
     changeMethods: ['ft_transfer', 'ft_transfer_call'],
   }
 
+  private readonly nonfungibleTokenContractMethods: ContractMethods = {
+    viewMethods: ['nft_token', 'nft_tokens', 'nft_tokens_for_owner'],
+    changeMethods: [],
+  }
+
   constructor(
     near: Near,
     contracts: {
       staking: string
       faucet: string
       fungible: string
+      nonfungible: string
     }
   ) {
     const appKeyPrefix = null
@@ -142,12 +158,6 @@ export class _NearRepo implements INearRepo {
       this.wallet,
       near.connection,
       this.wallet.getAccountId()
-    )
-
-    this.fungibleTokenContract = new Contract(
-      this.wallet.account(),
-      contracts.fungible,
-      this.fungibleTokenContractMethods
     )
 
     this.stakingContract = new Contract(
@@ -160,6 +170,18 @@ export class _NearRepo implements INearRepo {
       this.wallet.account(),
       contracts.faucet,
       this.faucetContractMethods
+    )
+
+    this.fungibleTokenContract = new Contract(
+      this.wallet.account(),
+      contracts.fungible,
+      this.fungibleTokenContractMethods
+    )
+
+    this.nonfungibleTokenContract = new Contract(
+      this.wallet.account(),
+      contracts.nonfungible,
+      this.nonfungibleTokenContractMethods
     )
   }
 
@@ -255,7 +277,9 @@ export class _NearRepo implements INearRepo {
           return new NearError(NearErrorCode.ContractError, err)
         }
       ),
-      TE.map(FungibleAccountBalanceMapper.toDomain)
+      TE.map(v =>
+        FungibleAccountBalanceMapper.toDomain(v, this.wallet.getAccountId())
+      )
     )
   }
 
@@ -427,7 +451,7 @@ export class _NearRepo implements INearRepo {
             await this.stakingContract.un_stake({amount}, 30000000000000, 1)
           },
           err => {
-            console.error('stakeFungibleToken', err)
+            console.error('unstakeFromStakingPool', err)
             return new NearError(NearErrorCode.ContractError, err)
           }
         )
@@ -445,7 +469,7 @@ export class _NearRepo implements INearRepo {
             await this.stakingContract.harvest({}, 60000000000000, 1)
           },
           err => {
-            console.error('stakeFungibleToken', err)
+            console.error('havestFromStakingPool', err)
             return new NearError(NearErrorCode.ContractError, err)
           }
         )
@@ -463,11 +487,82 @@ export class _NearRepo implements INearRepo {
             await this.stakingContract.withdraw({}, 60000000000000, 1)
           },
           err => {
-            console.error('stakeFungibleToken', err)
+            console.error('withdrawFromStakingPool', err)
             return new NearError(NearErrorCode.ContractError, err)
           }
         )
       )
+    )
+  }
+
+  getAllNonFungibleTokensInfo(): TE.TaskEither<
+    NearError | EntityCorrupted,
+    NonfungibleInfoList
+  > {
+    return pipe(
+      TE.tryCatch(
+        async () => {
+          // @ts-ignore:next-line
+          return await this.nonfungibleTokenContract.nft_tokens()
+        },
+        err => {
+          console.error('getNonFungibleTokensInfo', err)
+          return new NearError(NearErrorCode.ContractError, err)
+        }
+      ),
+      TE.chainW(v => TE.fromEither(NonfungibleInfoListMapper.toDomain(v)))
+    )
+  }
+
+  getMyNonFungibleTokensInfo(): TE.TaskEither<
+    NearError | EntityCorrupted,
+    NonfungibleInfoList
+  > {
+    return pipe(
+      this.getNearProfile(),
+      TE.chainW(() =>
+        this.getNonFungibleTokensInfo(new NearId(this.wallet.getAccountId()))
+      )
+    )
+  }
+
+  getNonFungibleTokensInfo(
+    walletId: NearId
+  ): TE.TaskEither<NearError | EntityCorrupted, NonfungibleInfoList> {
+    return pipe(
+      TE.tryCatch(
+        async () => {
+          // @ts-ignore:next-line
+          return await this.nonfungibleTokenContract.nft_tokens_for_owner({
+            account_id: walletId.getOrCrash(),
+          })
+        },
+        err => {
+          console.error('getNonFungibleTokensInfo', err)
+          return new NearError(NearErrorCode.ContractError, err)
+        }
+      ),
+      TE.chainW(v => TE.fromEither(NonfungibleInfoListMapper.toDomain(v)))
+    )
+  }
+
+  getSingleNonFungibleTokensInfo(
+    tokenId: string
+  ): TE.TaskEither<NearError | EntityCorrupted, NonfungibleInfo> {
+    return pipe(
+      TE.tryCatch(
+        async () => {
+          // @ts-ignore:next-line
+          return await this.nonfungibleTokenContract.nft_token({
+            token_id: tokenId,
+          })
+        },
+        err => {
+          console.error('getSingleNonFungibleTokensInfo', err)
+          return new NearError(NearErrorCode.ContractError, err)
+        }
+      ),
+      TE.chainW(v => TE.fromEither(NonfungibleInfoMapper.toDomain(v)))
     )
   }
 

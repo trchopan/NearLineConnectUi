@@ -50,18 +50,16 @@ export class FaucetInfoMapper {
     max_share_per_account,
     is_paused,
   }: any): FaucetInfo {
-    try {
-      return new FaucetInfo(
-        {
-          totalBalanceShare: new BigNumberValue(total_balance_share),
-          totalShared: new BigNumberValue(total_shared),
-          totalAccountShared: new BigNumberValue(total_account_shared),
-          maxSharePerAccount: new BigNumberValue(max_share_per_account),
-          isPaused: is_paused,
-        },
-        new ContractId('')
-      )
-    } catch (err) {}
+    return new FaucetInfo(
+      {
+        totalBalanceShare: new BigNumberValue(total_balance_share),
+        totalShared: new BigNumberValue(total_shared),
+        totalAccountShared: new BigNumberValue(total_account_shared),
+        maxSharePerAccount: new BigNumberValue(max_share_per_account),
+        isPaused: is_paused,
+      },
+      new ContractId('')
+    )
   }
 
   // TODO static toPersist(sp: FaucetInfo) {}
