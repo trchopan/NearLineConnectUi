@@ -40,7 +40,7 @@
 
 <div class="form-control w-full">
   <div>
-    <div class="flex my-2 gap-3 place-content-between">
+    <div class="flex gap-3 place-content-between">
       <span>Staked balance:</span>
       <span>{stakingAccountView.accountStaked}</span>
     </div>

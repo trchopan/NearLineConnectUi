@@ -15,28 +15,12 @@
   import {dateFmt, dateTimeFmt, thousandComma} from '@/presentation/helpers'
   import BN from 'bn.js'
   import {onMount} from 'svelte'
-  import {fly} from 'svelte/transition'
   import Interval from '@/presentation/components/Interval.svelte'
   import StatCard from '@/presentation/components/StatCard.svelte'
   import StakingTab from './StakingTab.svelte'
   import UnstakingTab from './UnstakingTab.svelte'
   import {addSeconds} from 'date-fns'
-
-  enum Tab {
-    Unstake = 'Unstake',
-    Stake = 'Stake',
-  }
-
-  let activeTab: Tab | null = Tab.Stake
-
-  // This is a hack for sync up the transiton between in-out
-  const TAB_CHANGE_DURATION = 300
-  const changeTab = (tab: Tab) => {
-    activeTab = null
-    setTimeout(() => {
-      activeTab = tab
-    }, TAB_CHANGE_DURATION)
-  }
+  import TabCards from '@/presentation/components/TabCards.svelte'
 
   const refreshAction = () => {
     $nearProfile.onHasData(() => getFungibleAccountBalance())
@@ -177,37 +161,14 @@
         </button>
       </div>
     </StatCard>
-    <div class="card shadow">
-      <div class="card-body">
-        <div class="tabs tabs-boxed grid grid-cols-2">
-          {#each [Tab.Stake, Tab.Unstake] as tab}
-            <span
-              on:click={() => changeTab(tab)}
-              class:tab-active={activeTab === tab}
-              class="tab tab-lg"
-            >
-              {tab}
-            </span>
-          {/each}
-        </div>
-        {#if activeTab === Tab.Stake}
-          <div
-            out:fly|local={{x: -300, duration: TAB_CHANGE_DURATION}}
-            in:fly|local={{x: 300, duration: TAB_CHANGE_DURATION}}
-          >
-            <StakingTab />
-          </div>
-        {/if}
-        {#if activeTab === Tab.Unstake}
-          <div
-            out:fly|local={{x: 300, duration: TAB_CHANGE_DURATION}}
-            in:fly|local={{x: -300, duration: TAB_CHANGE_DURATION}}
-          >
-            <UnstakingTab />
-          </div>
-        {/if}
-      </div>
-    </div>
+
+    <TabCards
+      config={[
+        {name: 'Stake', component: StakingTab},
+        {name: 'Unstake', component: UnstakingTab},
+      ]}
+    />
+
     <StatCard
       titleAndValues={[
         {
