@@ -2,6 +2,8 @@
   import NftGrid from './NftGrid.svelte'
   import {myNonfungibleTokenInfo} from '@/application/useNearNonfungible'
   import * as E from 'fp-ts/Either'
+  import {parseIpfs} from '@/presentation/helpers'
+  import {isEmpty} from 'lodash'
 
   interface NftGridView {
     tokenId: string
@@ -9,7 +11,6 @@
     title: string
     description: string
   }
-  import {parseIpfs} from '@/presentation/helpers'
 
   let myTokens: NftGridView[]
   $: $myNonfungibleTokenInfo
@@ -39,6 +40,10 @@
     })
 </script>
 
-<div>
-  <NftGrid tokens={myTokens} />
-</div>
+{#if $myNonfungibleTokenInfo.loading && isEmpty(myTokens)}
+  <div>Loading tokens...</div>
+{:else}
+  <div>
+    <NftGrid tokens={myTokens} />
+  </div>
+{/if}

@@ -37,13 +37,14 @@
   })
 </script>
 
+<h1 class="text-3xl font-bold my-3">NFT</h1>
 {#if $singleNonfungibleTokenInfo.loading}
-  <h1 class="text-3xl font-bold my-3">Loading...</h1>
+  <div>Loading...</div>
 {:else}
   <div>
     <h1 class="text-3xl font-bold my-3">{singleNonfungibleTokenView.title}</h1>
-    <div class="flex items-center my-3">
-      <img src={singleNonfungibleTokenView.img} alt="0" class="w-full h-auto" />
+    <div class="flex justify-center my-3">
+      <img src={singleNonfungibleTokenView.img} alt="0" class="max-w-sm w-full h-auto" />
     </div>
     <div>
       <span class="bg-accent text-sm px-1">Owner:</span>
@@ -55,7 +56,7 @@
     </div>
   </div>
 
-  <div class="mt-10 flex flex-col gap-3">
+  <div class="my-10 flex flex-col gap-3">
     <button class="btn btn-primary btn-lg">Share to LINE chat</button>
     <button class="btn btn-black text-white btn-lg">
       View on Near explorer
