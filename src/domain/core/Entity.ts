@@ -1,13 +1,6 @@
 import type {ValueObject} from '@/domain/core/ValueObject'
 import {isNull, isUndefined} from 'lodash'
 
-export class EntityCorrupted extends Error {
-  constructor(msg: string, err?: any) {
-    super(msg)
-    console.error(msg, err)
-  }
-}
-
 export const isEntity = (v: any): v is Entity<any, ValueObject<any>> => {
   return v instanceof Entity
 }

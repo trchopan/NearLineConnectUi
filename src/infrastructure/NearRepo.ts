@@ -51,7 +51,6 @@ import {
   NonfungibleInfo,
   NonfungibleInfoMapper,
 } from '@/domain/near/NonfungibleInfo'
-import {EntityCorrupted} from '@/domain/core/Entity'
 
 export const STAKING_STORAGE_AMOUNT = '0.01'
 export const FT_STORAGE_AMOUNT = '0.01'
@@ -368,7 +367,7 @@ export class _NearRepo implements INearRepo {
           return new NearError(NearErrorCode.ContractError, err)
         }
       ),
-      TE.map(v => StakingAccountInfoMapper.toDomain(v))
+      TE.map(StakingAccountInfoMapper.toDomain)
     )
   }
 
@@ -495,10 +494,7 @@ export class _NearRepo implements INearRepo {
     )
   }
 
-  getAllNonFungibleTokensInfo(): TE.TaskEither<
-    NearError | EntityCorrupted,
-    NonfungibleInfoList
-  > {
+  getAllNonFungibleTokensInfo(): TE.TaskEither<NearError, NonfungibleInfoList> {
     return pipe(
       TE.tryCatch(
         async () => {
@@ -510,14 +506,11 @@ export class _NearRepo implements INearRepo {
           return new NearError(NearErrorCode.ContractError, err)
         }
       ),
-      TE.chainW(v => TE.fromEither(NonfungibleInfoListMapper.toDomain(v)))
+      TE.map(NonfungibleInfoListMapper.toDomain)
     )
   }
 
-  getMyNonFungibleTokensInfo(): TE.TaskEither<
-    NearError | EntityCorrupted,
-    NonfungibleInfoList
-  > {
+  getMyNonFungibleTokensInfo(): TE.TaskEither<NearError, NonfungibleInfoList> {
     return pipe(
       this.getNearProfile(),
       TE.chainW(() =>
@@ -528,7 +521,7 @@ export class _NearRepo implements INearRepo {
 
   getNonFungibleTokensInfo(
     walletId: NearId
-  ): TE.TaskEither<NearError | EntityCorrupted, NonfungibleInfoList> {
+  ): TE.TaskEither<NearError, NonfungibleInfoList> {
     return pipe(
       TE.tryCatch(
         async () => {
@@ -542,13 +535,13 @@ export class _NearRepo implements INearRepo {
           return new NearError(NearErrorCode.ContractError, err)
         }
       ),
-      TE.chainW(v => TE.fromEither(NonfungibleInfoListMapper.toDomain(v)))
+      TE.map(NonfungibleInfoListMapper.toDomain)
     )
   }
 
   getSingleNonFungibleTokensInfo(
     tokenId: string
-  ): TE.TaskEither<NearError | EntityCorrupted, NonfungibleInfo> {
+  ): TE.TaskEither<NearError, NonfungibleInfo> {
     return pipe(
       TE.tryCatch(
         async () => {
@@ -562,7 +555,7 @@ export class _NearRepo implements INearRepo {
           return new NearError(NearErrorCode.ContractError, err)
         }
       ),
-      TE.chainW(v => TE.fromEither(NonfungibleInfoMapper.toDomain(v)))
+      TE.map(NonfungibleInfoMapper.toDomain)
     )
   }
 

@@ -55,7 +55,7 @@ export class StakingAccountInfoMapper {
       unstake_balance,
       reward,
       unstake_start_timestamp,
-    } = v
+    } = v || {}
     try {
       return new StakingAccountInfo(
         {

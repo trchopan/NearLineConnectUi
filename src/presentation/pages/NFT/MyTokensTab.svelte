@@ -1,7 +1,6 @@
 <script lang="ts">
   import NftGrid from './NftGrid.svelte'
   import {myNonfungibleTokenInfo} from '@/application/useNearNonfungible'
-  import * as E from 'fp-ts/Either'
   import {parseIpfs} from '@/presentation/helpers'
   import {isEmpty} from 'lodash'
 
@@ -18,25 +17,15 @@
       myTokens = []
     })
     .onHasData(data => {
-      myTokens = data.tokens.map(
-        E.fold(
-          err => ({
-            tokenId: 'corrupted',
-            img: '',
-            title: 'corrupted',
-            description: 'corrupted',
-          }),
-          t => {
-            const meta = t.metadata.getOrCrash()
-            return {
-              tokenId: t.tokenId,
-              img: parseIpfs(meta.media),
-              title: meta.title,
-              description: meta.description,
-            }
-          }
-        )
-      )
+      myTokens = data.tokens.map(t => {
+        const meta = t.metadata.getOrCrash()
+        return {
+          tokenId: t.tokenId,
+          img: parseIpfs(meta.media),
+          title: meta.title,
+          description: meta.description,
+        }
+      })
     })
 </script>
 

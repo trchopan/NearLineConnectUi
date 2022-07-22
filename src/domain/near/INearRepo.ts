@@ -10,7 +10,6 @@ import type {FungibleAccountBalance} from './FungibleAccountBalance'
 import type {NonfungibleInfoList} from './NonfungibleInfoList'
 import type {NearId} from './NearId'
 import type {NonfungibleInfo} from './NonfungibleInfo'
-import type {EntityCorrupted} from '../core/Entity'
 
 export enum NearErrorCode {
   ContractError = 'ContractError',
@@ -125,30 +124,24 @@ export interface INearRepo {
   /**
    * List information of all non-fungible tokens of the NFT contract
    **/
-  getAllNonFungibleTokensInfo(): TE.TaskEither<
-    NearError | EntityCorrupted,
-    NonfungibleInfoList
-  >
+  getAllNonFungibleTokensInfo(): TE.TaskEither<NearError, NonfungibleInfoList>
 
   /**
    * List information of all non-fungible tokens of current wallet
    **/
-  getMyNonFungibleTokensInfo(): TE.TaskEither<
-    NearError | EntityCorrupted,
-    NonfungibleInfoList
-  >
+  getMyNonFungibleTokensInfo(): TE.TaskEither<NearError, NonfungibleInfoList>
 
   /**
    * List information of all non-fungible tokens of given wallet
    **/
   getNonFungibleTokensInfo(
     walletId: NearId
-  ): TE.TaskEither<NearError | EntityCorrupted, NonfungibleInfoList>
+  ): TE.TaskEither<NearError, NonfungibleInfoList>
 
   /**
    * Get information of single non-fungible token
    **/
   getSingleNonFungibleTokensInfo(
     tokenId: string
-  ): TE.TaskEither<NearError | EntityCorrupted, NonfungibleInfo>
+  ): TE.TaskEither<NearError, NonfungibleInfo>
 }

@@ -1,10 +1,9 @@
-import * as E from 'fp-ts/Either'
-import {Entity, EntityCorrupted} from '@/domain/core/Entity'
+import {Entity} from '@/domain/core/Entity'
 import {ContractId} from './ContractId'
 import {NonfungibleInfo, NonfungibleInfoMapper} from './NonfungibleInfo'
 
 interface NonfungibleInfoListProps {
-  tokens: E.Either<EntityCorrupted, NonfungibleInfo>[]
+  tokens: NonfungibleInfo[]
 }
 
 export class NonfungibleInfoList extends Entity<
@@ -27,17 +26,12 @@ export class NonfungibleInfoList extends Entity<
 export class NonfungibleInfoListMapper {
   // static toDTO(): object {}
 
-  static toDomain(v: any): E.Either<EntityCorrupted, NonfungibleInfoList> {
-    return E.tryCatch(
-      () => {
-        return new NonfungibleInfoList(
-          {
-            tokens: (v as any[]).map(NonfungibleInfoMapper.toDomain),
-          },
-          new ContractId('')
-        )
+  static toDomain(v: any): NonfungibleInfoList {
+    return new NonfungibleInfoList(
+      {
+        tokens: ((v || []) as any[]).map(NonfungibleInfoMapper.toDomain),
       },
-      err => new EntityCorrupted('NonfungibleInfoMapper', err)
+      new ContractId('')
     )
   }
 

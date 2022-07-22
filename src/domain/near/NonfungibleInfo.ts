@@ -35,20 +35,15 @@ export class NonfungibleInfo extends Entity<NonfungibleInfoProps, ContractId> {
 export class NonfungibleInfoMapper {
   // static toDTO(): object {}
 
-  static toDomain(v: any): E.Either<EntityCorrupted, NonfungibleInfo> {
-    return E.tryCatch(
-      () => {
-        const {token_id, owner_id, metadata} = v
-        return new NonfungibleInfo(
-          {
-            token_id,
-            owner_id: new NearId(owner_id),
-            metadata: new NonfungibleMetadataValue(metadata),
-          },
-          new ContractId('')
-        )
+  static toDomain(v: any | null): NonfungibleInfo {
+    const {token_id, owner_id, metadata} = v || {}
+    return new NonfungibleInfo(
+      {
+        token_id,
+        owner_id: new NearId(owner_id),
+        metadata: new NonfungibleMetadataValue(metadata),
       },
-      err => new EntityCorrupted('NonfungibleInfoMapper', err)
+      new ContractId('')
     )
   }
 

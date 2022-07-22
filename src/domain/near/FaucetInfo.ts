@@ -43,13 +43,14 @@ export class FaucetInfo extends Entity<FaucetInfoProps, ContractId> {
 export class FaucetInfoMapper {
   // static toDTO(): object {}
 
-  static toDomain({
-    total_balance_share,
-    total_shared,
-    total_account_shared,
-    max_share_per_account,
-    is_paused,
-  }: any): FaucetInfo {
+  static toDomain(v: any | null): FaucetInfo {
+    const {
+      total_balance_share,
+      total_shared,
+      total_account_shared,
+      max_share_per_account,
+      is_paused,
+    } = v || {}
     return new FaucetInfo(
       {
         totalBalanceShare: new BigNumberValue(total_balance_share),
