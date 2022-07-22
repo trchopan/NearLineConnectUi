@@ -50,7 +50,7 @@ export class StakingPoolInfoMapper {
       total_reward,
       total_stake_balance,
       total_stakers,
-    } = v
+    } = v || {}
     return new StakingPoolInfo(
       {
         isPaused: is_paused,

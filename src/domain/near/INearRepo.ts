@@ -7,6 +7,9 @@ import type {FungibleStorageBalance} from './FungibleStorageBalance'
 import type {StakingPoolInfo} from './StakingPoolInfo'
 import type {StakingAccountInfo} from './StakingAccountInfo'
 import type {FungibleAccountBalance} from './FungibleAccountBalance'
+import type {NonfungibleInfoList} from './NonfungibleInfoList'
+import type {NearId} from './NearId'
+import type {NonfungibleInfo} from './NonfungibleInfo'
 
 export enum NearErrorCode {
   ContractError = 'ContractError',
@@ -117,4 +120,28 @@ export interface INearRepo {
    * Withdraw fungible tokens from the Staking contract to the current wallet.
    **/
   withdrawFromStakingPool(): TE.TaskEither<NearError, void>
+
+  /**
+   * List information of all non-fungible tokens of the NFT contract
+   **/
+  getAllNonFungibleTokensInfo(): TE.TaskEither<NearError, NonfungibleInfoList>
+
+  /**
+   * List information of all non-fungible tokens of current wallet
+   **/
+  getMyNonFungibleTokensInfo(): TE.TaskEither<NearError, NonfungibleInfoList>
+
+  /**
+   * List information of all non-fungible tokens of given wallet
+   **/
+  getNonFungibleTokensInfo(
+    walletId: NearId
+  ): TE.TaskEither<NearError, NonfungibleInfoList>
+
+  /**
+   * Get information of single non-fungible token
+   **/
+  getSingleNonFungibleTokensInfo(
+    tokenId: string
+  ): TE.TaskEither<NearError, NonfungibleInfo>
 }

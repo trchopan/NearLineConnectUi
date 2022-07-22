@@ -26,12 +26,12 @@ export class FungibleAccountBalance extends Entity<
 export class FungibleAccountBalanceMapper {
   // static toDTO(): object {}
 
-  static toDomain(balance: any): FungibleAccountBalance {
+  static toDomain(balance: any, accountId: string): FungibleAccountBalance {
     return new FungibleAccountBalance(
       {
         balance: new BigNumberValue(balance),
       },
-      new NearId('')
+      new NearId(accountId)
     )
   }
 

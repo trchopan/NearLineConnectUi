@@ -32,7 +32,7 @@ export class FungibleStorageBalanceMapper {
   // static toDTO(): object {}
 
   static toDomain(v: any): FungibleStorageBalance {
-    const {total, avaiable} = v;
+    const {total, avaiable} = v || {};
     return new FungibleStorageBalance(
       {
         total: new BigNumberValue(total),

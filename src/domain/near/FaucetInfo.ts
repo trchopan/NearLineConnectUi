@@ -43,25 +43,24 @@ export class FaucetInfo extends Entity<FaucetInfoProps, ContractId> {
 export class FaucetInfoMapper {
   // static toDTO(): object {}
 
-  static toDomain({
-    total_balance_share,
-    total_shared,
-    total_account_shared,
-    max_share_per_account,
-    is_paused,
-  }: any): FaucetInfo {
-    try {
-      return new FaucetInfo(
-        {
-          totalBalanceShare: new BigNumberValue(total_balance_share),
-          totalShared: new BigNumberValue(total_shared),
-          totalAccountShared: new BigNumberValue(total_account_shared),
-          maxSharePerAccount: new BigNumberValue(max_share_per_account),
-          isPaused: is_paused,
-        },
-        new ContractId('')
-      )
-    } catch (err) {}
+  static toDomain(v: any | null): FaucetInfo {
+    const {
+      total_balance_share,
+      total_shared,
+      total_account_shared,
+      max_share_per_account,
+      is_paused,
+    } = v || {}
+    return new FaucetInfo(
+      {
+        totalBalanceShare: new BigNumberValue(total_balance_share),
+        totalShared: new BigNumberValue(total_shared),
+        totalAccountShared: new BigNumberValue(total_account_shared),
+        maxSharePerAccount: new BigNumberValue(max_share_per_account),
+        isPaused: is_paused,
+      },
+      new ContractId('')
+    )
   }
 
   // TODO static toPersist(sp: FaucetInfo) {}

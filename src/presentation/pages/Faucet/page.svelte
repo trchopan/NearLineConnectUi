@@ -6,6 +6,8 @@
   import StatCard from '@/presentation/components/StatCard.svelte'
   import BigNumberInput from '@/presentation/components/BigNumberInput.svelte'
   import {onMount} from 'svelte'
+  import {login} from '@/application/useNearAuth'
+  import {nearProfile} from '@/application/useNearAuth'
   import {
     getFaucetInfo,
     faucetInfo,
@@ -100,38 +102,46 @@
     primary
   />
 
-  <StatCard
-    titleAndValues={[
-      {
-        title: 'Token claimed',
-        value: faucetView.tokenClaimed,
-      },
-    ]}
-  >
-    <div class="form-control w-full">
-      <div class="sm:flex gap-3 items-center">
-        <BigNumberInput bind:value={token} />
+  {#if $nearProfile.loading}
+    <div>Loading wallet...</div>
+  {:else if $nearProfile.notInited || $nearProfile.hasError}
+    <button on:click={login} class="btn btn-black">
+      Login NEAR to claim faucet tokens
+    </button>
+  {:else if $nearProfile.hasData}
+    <StatCard
+      titleAndValues={[
+        {
+          title: 'Token claimed',
+          value: faucetView.tokenClaimed,
+        },
+      ]}
+    >
+      <div class="form-control w-full">
+        <div class="sm:flex gap-3 items-center">
+          <BigNumberInput bind:value={token} />
+        </div>
       </div>
-    </div>
-    <div>
-      {#if faucetView.maxSharePerAccount === 'Loading...'}
-        <p class="my-1">Loading...</p>
-      {:else}
-        <p class="my-1">
-          One account can get max {faucetView.maxSharePerAccount} LINE. You cannot
-          get more!
-        </p>
-      {/if}
-      <button
-        on:click|preventDefault={() => signClaimFaucetTokens(token)}
-        class="btn btn-secondary w-full"
-        class:loading={$claimFaucetTokens.loading}
-        class:btn-disabled={$claimFaucetTokens.loading}
-      >
-        Claim
-      </button>
-    </div>
-  </StatCard>
+      <div>
+        {#if faucetView.maxSharePerAccount === 'Loading...'}
+          <p class="my-1">Loading...</p>
+        {:else}
+          <p class="my-1">
+            One account can get max {faucetView.maxSharePerAccount} LINE. You cannot
+            get more!
+          </p>
+        {/if}
+        <button
+          on:click|preventDefault={() => signClaimFaucetTokens(token)}
+          class="btn btn-secondary w-full"
+          class:loading={$claimFaucetTokens.loading}
+          class:btn-disabled={$claimFaucetTokens.loading}
+        >
+          Claim
+        </button>
+      </div>
+    </StatCard>
+  {/if}
 </div>
 
 <div

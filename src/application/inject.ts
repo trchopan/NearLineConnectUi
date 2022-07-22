@@ -16,5 +16,6 @@ export const NearRepo: INearRepo = new _NearRepo(
     staking: import.meta.env.VITE_STAKING_CONTRACT_NAME,
     faucet: import.meta.env.VITE_FAUCET_CONTRACT_NAME,
     fungible: import.meta.env.VITE_FT_CONTRACT_NAME,
+    nonfungible: import.meta.env.VITE_NFT_CONTRACT_NAME,
   }
 )
