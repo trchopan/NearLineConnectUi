@@ -7,7 +7,7 @@ import type {LiffError} from '@/domain/liff/ILiffRepo'
 import {derived, writable} from 'svelte/store'
 import {Result} from '@/application/result'
 import type {LiffAcccessToken} from '@/domain/liff/LiffAccessToken'
-import { lineIdByWallet } from './useNearLineConnect'
+import {myLineIdByWallet} from './useNearLineConnect'
 
 export const liffProfile = writable(new Result<LiffProfile, LiffError>())
 
@@ -69,7 +69,7 @@ export const logout = async () => {
     TE.fold(
       err => T.of(liffProfile.update(v => v.setError(err))),
       _ => {
-        lineIdByWallet.update(v => v.reset())
+        myLineIdByWallet.update(v => v.reset())
         return T.of(liffProfile.update(v => v.reset()))
       }
     )

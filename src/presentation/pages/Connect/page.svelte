@@ -3,8 +3,8 @@
   import GotenFusion from '@/assets/goten-fusion.jpeg'
   import SuccessFussion from '@/assets/success-fussion.jpg'
   import {
-    lineIdByWallet,
-    getLineIdByWallet,
+    myLineIdByWallet,
+    getMyLineIdByWallet,
   } from '@/application/useNearLineConnect'
   import {liffProfile} from '@/application/useLiffAuth'
   import {nearProfile} from '@/application/useNearAuth'
@@ -17,8 +17,8 @@
   liffProfile.subscribe(_liffProfile =>
     nearProfile.subscribe(_nearProfile =>
       _liffProfile.onHasData(() =>
-        _nearProfile.onHasData(({accountId}) => {
-          getLineIdByWallet(accountId)
+        _nearProfile.onHasData(() => {
+          getMyLineIdByWallet()
         })
       )
     )
@@ -40,13 +40,25 @@
   }
   const onLoginLine = partialRight(_onLogin, 'line')
   const onLoginNear = partialRight(_onLogin, 'near')
+
+  const notYetFusion = () => {
+    const myLineIdIsMissing =
+      !$myLineIdByWallet.hasData || $myLineIdByWallet.value?.isLeft
+
+    const myLineIdDifferWalletId =
+      $myLineIdByWallet.value?.isRight &&
+      $myLineIdByWallet.value?.getOrCrash() !==
+        $liffProfile.value?.lineId.getOrCrash()
+
+    return myLineIdIsMissing || myLineIdDifferWalletId
+  }
 </script>
 
 <div>
   <img src={LineNearLogo} alt="0" class="w-full max-w-sm mx-auto" />
 </div>
 
-{#if !$lineIdByWallet.hasData || $lineIdByWallet.value?.isLeft}
+{#if notYetFusion()}
   <h1
     class="bg-primary text-white text-lg font-bold text-center my-5 px-5 py-3"
   >
@@ -54,7 +66,7 @@
   </h1>
   <div>
     <img src={GotenFusion} alt="0" class="w-full max-w-sm mx-auto flashit" />
-    {#if $lineIdByWallet.loading}
+    {#if $myLineIdByWallet.loading}
       <div class="max-w-sm mx-auto">
         <progress class="progress w-full" />
       </div>
@@ -79,21 +91,18 @@
             : $nearProfile.value?.accountId.getOrCrash() || 'Loading'}
         </button>
       </FusionLineNearGrid>
+      {#if $liffProfile.hasData && $nearProfile.hasData}
+        <div>
+          <h3 class="font-medium text-md">
+            Begin connect your Line Profile and Near Wallet
+          </h3>
+          <GetRegistrationSignature register />
+        </div>
+      {/if}
     {/if}
   </div>
-
-  {#if $liffProfile.hasData && $nearProfile.hasData}
-    <div>
-      <h3 class="font-medium text-md">
-        Begin connect your Line Profile and Near Wallet
-      </h3>
-      <GetRegistrationSignature register />
-    </div>
-  {/if}
 {:else}
-  <h1
-    class="bg-primary text-lg font-bold text-center my-5 px-5 py-3"
-  >
+  <h1 class="bg-primary text-lg font-bold text-center my-5 px-5 py-3">
     FUSION SUCCESS !!!
   </h1>
 
@@ -107,7 +116,7 @@
   <hr class="my-3" />
   <div>
     <h3 class="font-medium text-md">
-      Break Connect your Line profile and Near wallet
+      Remove connection of your Line profile and Near wallet
     </h3>
     <GetRegistrationSignature unregister />
   </div>

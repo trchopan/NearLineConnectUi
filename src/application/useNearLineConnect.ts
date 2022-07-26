@@ -2,7 +2,7 @@ import {ConnectRepo, LiffRepo, NearRepo} from '@/application/inject'
 import * as T from 'fp-ts/Task'
 import * as TE from 'fp-ts/TaskEither'
 import {pipe} from 'fp-ts/function'
-import {writable} from 'svelte/store'
+import {get, writable} from 'svelte/store'
 import {Result} from '@/application/result'
 import type {NearError} from '@/domain/near/INearRepo'
 import type {LineId} from '@/domain/liff/LineId'
@@ -10,6 +10,7 @@ import type {NearId} from '@/domain/near/NearId'
 import type {ConnectError} from '@/domain/connect/IConnectRepo'
 import type {LiffError} from '@/domain/liff/ILiffRepo'
 import type {Signature} from '@/domain/connect/Signature'
+import {nearProfile} from './useNearAuth'
 
 export const registrationSignature = writable(
   new Result<Signature, ConnectError | LiffError>()
@@ -80,6 +81,29 @@ export const signRemoveLineId = async ({
     TE.fold(
       err => T.of(removeLineId.update(v => v.setError(err))),
       res => T.of(removeLineId.update(v => v.setValue(res)))
+    )
+  )()
+}
+
+export const myLineIdByWallet = writable(new Result<LineId, NearError>())
+
+export const getMyLineIdByWallet = async () => {
+  const _nearProfile = get(nearProfile)
+  const _myLineIdByWallet = get(myLineIdByWallet)
+  if (
+    !_nearProfile.hasData ||
+    _nearProfile.value?.accountId.isLeft ||
+    _myLineIdByWallet.hasData
+  ) {
+    return
+  }
+  myLineIdByWallet.update(v => v.setLoading())
+  await pipe(
+    NearRepo.getLineIdByWallet(_nearProfile.value?.accountId),
+    T.delay(3000), // Simulate loading
+    TE.fold(
+      err => T.of(myLineIdByWallet.update(v => v.setError(err))),
+      res => T.of(myLineIdByWallet.update(v => v.setValue(res)))
     )
   )()
 }
