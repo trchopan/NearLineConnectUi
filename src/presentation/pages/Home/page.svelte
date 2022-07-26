@@ -11,9 +11,10 @@
 
 <h2 class="text-md font-bold my-3">Functionalities:</h2>
 <ul>
-  <li>Fungible token (Token)</li>
-  <li>Non-Fungible token (NFT)</li>
+  <li>Connect Line Account with Wallet</li>
   <li>Faucet</li>
   <li>Staking</li>
-  <li>Validation on Line Liff Share and View NFT</li>
+  <li>Fungible token</li>
+  <li>Non-Fungible token</li>
+  <li>Browse and View NFT</li>
 </ul>

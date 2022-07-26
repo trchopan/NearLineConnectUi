@@ -6,6 +6,7 @@
   import Home from '@/presentation/pages/Home/page.svelte'
   import NFT from '@/presentation/pages/NFT/page.svelte'
   import NFTSingle from '@/presentation/pages/NFTSingle/page.svelte'
+  import Connect from '@/presentation/pages/Connect/page.svelte'
   import {authCheck as liffAuthCheck} from '@/application/useLiffAuth'
   import {authCheck as nearWalletCheck} from '@/application/useNearAuth'
   import {onMount} from 'svelte'
@@ -31,6 +32,7 @@
           </Route>
         </Router>
       </Route>
+      <Route path="connect"><Connect /></Route>
     </div>
   </Router>
 </main>

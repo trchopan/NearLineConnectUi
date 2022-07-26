@@ -6,6 +6,8 @@ import {pipe} from 'fp-ts/function'
 import type {LiffError} from '@/domain/liff/ILiffRepo'
 import {derived, writable} from 'svelte/store'
 import {Result} from '@/application/result'
+import type {LiffAcccessToken} from '@/domain/liff/LiffAccessToken'
+import { lineIdByWallet } from './useNearLineConnect'
 
 export const liffProfile = writable(new Result<LiffProfile, LiffError>())
 
@@ -31,6 +33,22 @@ export const authCheck = async () => {
   )()
 }
 
+export const liffAccessToken = writable(
+  new Result<LiffAcccessToken, LiffError>()
+)
+
+export const getLiffAccessToken = async () => {
+  liffAccessToken.update(v => v.setLoading())
+  await pipe(
+    TE.fromEither(LiffRepo.getLiffAccessToken()),
+    T.delay(3000), // Simulate loading
+    TE.fold(
+      err => T.of(liffAccessToken.update(v => v.setError(err))),
+      res => T.of(liffAccessToken.update(v => v.setValue(res)))
+    )
+  )()
+}
+
 export const login = async () => {
   liffProfile.update(v => v.setLoading())
   await pipe(
@@ -50,7 +68,10 @@ export const logout = async () => {
     T.delay(1000), // Simulate loading
     TE.fold(
       err => T.of(liffProfile.update(v => v.setError(err))),
-      _ => T.of(liffProfile.update(v => v.reset()))
+      _ => {
+        lineIdByWallet.update(v => v.reset())
+        return T.of(liffProfile.update(v => v.reset()))
+      }
     )
   )()
 }

@@ -10,6 +10,7 @@ import type {FungibleAccountBalance} from './FungibleAccountBalance'
 import type {NonfungibleInfoList} from './NonfungibleInfoList'
 import type {NearId} from './NearId'
 import type {NonfungibleInfo} from './NonfungibleInfo'
+import type {LineId} from '../liff/LineId'
 
 export enum NearErrorCode {
   ContractError = 'ContractError',
@@ -144,4 +145,29 @@ export interface INearRepo {
   getSingleNonFungibleTokensInfo(
     tokenId: string
   ): TE.TaskEither<NearError, NonfungibleInfo>
+
+  /**
+   * Register the LineId for a wallet
+   */
+  recordLineId(
+    signature: string,
+    line_id: LineId,
+    wallet: NearId,
+    expire: number
+  ): TE.TaskEither<NearError, void>
+
+  /**
+   * Register the LineId for a wallet
+   */
+  removeLineId(
+    signature: string,
+    line_id: LineId,
+    wallet: NearId,
+    expire: number
+  ): TE.TaskEither<NearError, void>
+
+  /**
+   * Get the LineId of given wallet
+   */
+  getLineIdByWallet(walletId: NearId): TE.TaskEither<NearError, LineId>
 }

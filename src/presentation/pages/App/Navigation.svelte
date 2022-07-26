@@ -20,6 +20,7 @@
     text: string
   }
   const pages: PageRoute[] = [
+    {link: '/connect', text: 'Connect'},
     {link: '/staking', text: 'Staking'},
     {link: '/faucet', text: 'Faucet'},
     {link: '/nft', text: 'NFT'},

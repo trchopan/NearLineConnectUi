@@ -51,6 +51,7 @@ import {
   NonfungibleInfo,
   NonfungibleInfoMapper,
 } from '@/domain/near/NonfungibleInfo'
+import {LineId} from '@/domain/liff/LineId'
 
 export const STAKING_STORAGE_AMOUNT = '0.01'
 export const FT_STORAGE_AMOUNT = '0.01'
@@ -115,6 +116,7 @@ export class _NearRepo implements INearRepo {
   private fungibleTokenContract: Contract
   private faucetContract: Contract
   private nonfungibleTokenContract: Contract
+  private nearLineConnectContract: Contract
 
   private readonly stakingContractMethods: ContractMethods = {
     viewMethods: [
@@ -141,6 +143,11 @@ export class _NearRepo implements INearRepo {
     changeMethods: [],
   }
 
+  private readonly nearLineConnectMethods: ContractMethods = {
+    viewMethods: ['get_line_id_by_wallet'],
+    changeMethods: ['record_line_id_by_wallet', 'remove_line_id_by_wallet'],
+  }
+
   constructor(
     near: Near,
     contracts: {
@@ -148,6 +155,7 @@ export class _NearRepo implements INearRepo {
       faucet: string
       fungible: string
       nonfungible: string
+      nearLineConnect: string
     }
   ) {
     const appKeyPrefix = null
@@ -181,6 +189,12 @@ export class _NearRepo implements INearRepo {
       this.wallet.account(),
       contracts.nonfungible,
       this.nonfungibleTokenContractMethods
+    )
+
+    this.nearLineConnectContract = new Contract(
+      this.wallet.account(),
+      contracts.nearLineConnect,
+      this.nearLineConnectMethods
     )
   }
 
@@ -556,6 +570,88 @@ export class _NearRepo implements INearRepo {
         }
       ),
       TE.map(NonfungibleInfoMapper.toDomain)
+    )
+  }
+
+  recordLineId(
+    signature: string,
+    line_id: LineId,
+    wallet: NearId,
+    expire: number
+  ): TE.TaskEither<NearError, void> {
+    return pipe(
+      this.getNearProfile(),
+      TE.chainW(() =>
+        TE.tryCatch(
+          async () => {
+            // @ts-ignore:next-line
+            await this.nearLineConnectContract.record_line_id_by_wallet(
+              {
+                signature,
+                line_id: line_id.getOrCrash(),
+                wallet: wallet.getOrCrash(),
+                expire,
+              },
+              30000000000000,
+              1
+            )
+          },
+          err => {
+            console.error('recordLineId', err)
+            return new NearError(NearErrorCode.ContractError, err)
+          }
+        )
+      )
+    )
+  }
+
+  removeLineId(
+    signature: string,
+    line_id: LineId,
+    wallet: NearId,
+    expire: number
+  ): TE.TaskEither<NearError, void> {
+    return pipe(
+      this.getNearProfile(),
+      TE.chainW(() =>
+        TE.tryCatch(
+          async () => {
+            // @ts-ignore:next-line
+            await this.nearLineConnectContract.remove_line_id_by_wallet(
+              {
+                signature,
+                line_id: line_id.getOrCrash(),
+                wallet: wallet.getOrCrash(),
+                expire,
+              },
+              30000000000000,
+              1
+            )
+          },
+          err => {
+            console.error('removeLineId', err)
+            return new NearError(NearErrorCode.ContractError, err)
+          }
+        )
+      )
+    )
+  }
+
+  getLineIdByWallet(walletId: NearId): TE.TaskEither<NearError, LineId> {
+    return pipe(
+      TE.tryCatch(
+        async () => {
+          // @ts-ignore:next-line
+          return await this.nearLineConnectContract.get_line_id_by_wallet({
+            wallet: walletId.getOrCrash(),
+          })
+        },
+        err => {
+          console.error('getLineIdByWallet', err)
+          return new NearError(NearErrorCode.ContractError, err)
+        }
+      ),
+      TE.map(v => new LineId(v))
     )
   }
 

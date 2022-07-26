@@ -15,6 +15,7 @@ import {
   getMyNonFungibleTokensInfo,
   myNonfungibleTokenInfo,
 } from './useNearNonfungible'
+import {lineIdByWallet} from './useNearLineConnect'
 
 export const nearProfile = writable(new Result<NearProfile, NearError>())
 
@@ -55,6 +56,7 @@ export const logout = async () => {
     TE.fold(
       err => T.of(nearProfile.update(v => v.setError(err))),
       _ => {
+        lineIdByWallet.update(v => v.reset())
         stakingAccountInfo.update(v => v.reset())
         fungibleAccountBalance.update(v => v.reset())
         myNonfungibleTokenInfo.update(v => v.reset())
