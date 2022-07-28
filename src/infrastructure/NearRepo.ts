@@ -73,7 +73,6 @@ interface TransactionCall {
 
 export const getConfig = (env: string): NearConfig => {
   switch (env) {
-    case 'production':
     case 'mainnet':
       return {
         networkId: 'mainnet',
@@ -82,6 +81,7 @@ export const getConfig = (env: string): NearConfig => {
         helperUrl: 'https://helper.mainnet.near.org',
         headers: {},
       }
+    case 'production':
     case 'development':
       return {
         networkId: 'testnet',
