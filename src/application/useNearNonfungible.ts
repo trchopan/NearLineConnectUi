@@ -55,3 +55,17 @@ export const getSingleNonFungibleTokensInfo = async (tokenId: string) => {
     )
   )()
 }
+
+export const mintNonFungibleToken = writable(new Result<void, NearError>())
+
+export const signMintNonFungibleToken = async (t: NonfungibleInfo) => {
+  mintNonFungibleToken.update(v => v.setLoading())
+  await pipe(
+    NearRepo.mintNonFungibleToken(t),
+    T.delay(3000), // Simulate loading
+    TE.fold(
+      err => T.of(mintNonFungibleToken.update(v => v.setError(err))),
+      res => T.of(mintNonFungibleToken.update(v => v.setValue(res)))
+    )
+  )()
+}

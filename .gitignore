@@ -25,3 +25,5 @@ dist-ssr
 .svelte-kit
 
 .vercel
+
+line_friends.json

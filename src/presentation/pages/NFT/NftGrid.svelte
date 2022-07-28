@@ -28,10 +28,9 @@
       </Link>
       <div class="px-2 flex flex-col place-content-between h-full">
         <div>
-          <p class="font-medium">{token.title}</p>
-          <p>{token.description}</p>
+          <p class="font-medium text-ellipsis overflow-hidden my-title">{token.title}</p>
         </div>
-        {#if withOwner}
+        {#if withOwner && token.ownerId !== import.meta.env.VITE_NFT_OWNER_ID}
           <div
             class={`truncate text-sm px-1 ${
               isMyToken(token.ownerId)
@@ -46,3 +45,11 @@
     </li>
   {/each}
 </ul>
+
+<style>
+ .my-title {
+   display: -webkit-box;
+   -webkit-line-clamp: 3;
+   -webkit-box-orient: vertical;
+ }
+</style>

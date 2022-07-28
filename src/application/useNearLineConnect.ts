@@ -11,6 +11,7 @@ import type {ConnectError} from '@/domain/connect/IConnectRepo'
 import type {LiffError} from '@/domain/liff/ILiffRepo'
 import type {Signature} from '@/domain/connect/Signature'
 import {nearProfile} from './useNearAuth'
+import type {LineProfile} from '@/domain/connect/LineProfile'
 
 export const registrationSignature = writable(
   new Result<Signature, ConnectError | LiffError>()
@@ -118,6 +119,20 @@ export const getLineIdByWallet = async (wallet: NearId) => {
     TE.fold(
       err => T.of(lineIdByWallet.update(v => v.setError(err))),
       res => T.of(lineIdByWallet.update(v => v.setValue(res)))
+    )
+  )()
+}
+
+export const lineProfileById = writable(new Result<LineProfile, ConnectError>())
+
+export const getLineProfileById = async (lineId: LineId) => {
+  lineProfileById.update(v => v.setLoading())
+  await pipe(
+    ConnectRepo.getLineProfileByLineId(lineId),
+    T.delay(3000), // Simulate loading
+    TE.fold(
+      err => T.of(lineProfileById.update(v => v.setError(err))),
+      res => T.of(lineProfileById.update(v => v.setValue(res)))
     )
   )()
 }

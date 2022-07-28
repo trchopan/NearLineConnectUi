@@ -21,7 +21,6 @@ export class LiffAcccessToken extends Entity<LiffAcccessTokenProps, LiffId> {
 
 export class LiffAcccessTokenMapper {
   static toDomain(v: any, userId: string): LiffAcccessToken {
-    console.log('>>>', v)
     return new LiffAcccessToken(
       {
         token: v,

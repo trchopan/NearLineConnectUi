@@ -2,6 +2,7 @@ import type {
   SafeParseError,
   SafeParseSuccess,
   ZodEffects,
+  ZodObject,
   ZodSchema,
   ZodTypeAny,
 } from 'zod'
@@ -16,6 +17,7 @@ export abstract class ValueObject<T, R = any> {
   protected abstract readonly schema:
     | ZodSchema<T>
     | ZodEffects<ZodTypeAny, T, R>
+    | ZodObject<any>
   private _value?: Either<ValueFailure, T>
 
   constructor(private _input: R) {}
@@ -62,7 +64,8 @@ export abstract class ValueObject<T, R = any> {
     return pipe(
       this.val,
       fold(v => {
-        console.error(`${this.name}: getOrCrash throws`)
+        console.error(`${this.name}: getOrCrash throws`, this.val)
+        console.log('input > ', this._input)
         throw v
       }, identity)
     )

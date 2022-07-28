@@ -170,4 +170,10 @@ export interface INearRepo {
    * Get the LineId of given wallet
    */
   getLineIdByWallet(walletId: NearId): TE.TaskEither<NearError, LineId>
+
+  /**
+   * *Only Contract owner can perform this action*
+   * Mint a new token
+   **/
+  mintNonFungibleToken(t: NonfungibleInfo): TE.TaskEither<NearError, void>
 }

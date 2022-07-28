@@ -1,11 +1,16 @@
 import {z} from 'zod'
 import {ValueObject} from '@/domain/core/ValueObject'
+import BN from 'bn.js'
 
 const schema = z.object({
   title: z.string(),
   description: z.string(),
   media: z.string(),
-  copies: z.number(),
+  extra: z
+    // .preprocess(v => (typeof v === 'string' ? parseInt(v) : v), z.number())
+    .string()
+    .nullable()
+    .transform(x => new BN(x)),
 })
 
 export class NonfungibleMetadataValue extends ValueObject<

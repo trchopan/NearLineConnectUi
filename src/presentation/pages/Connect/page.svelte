@@ -41,7 +41,7 @@
   const onLoginLine = partialRight(_onLogin, 'line')
   const onLoginNear = partialRight(_onLogin, 'near')
 
-  const notYetFusion = () => {
+  $: notYetFusion = () => {
     const myLineIdIsMissing =
       !$myLineIdByWallet.hasData || $myLineIdByWallet.value?.isLeft
 
