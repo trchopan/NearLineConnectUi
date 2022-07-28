@@ -5,6 +5,7 @@
   import Staking from '@/presentation/pages/Staking/page.svelte'
   import Home from '@/presentation/pages/Home/page.svelte'
   import NFT from '@/presentation/pages/NFT/page.svelte'
+  import NFTMint from '@/presentation/pages/NFTMint/page.svelte'
   import NFTSingle from '@/presentation/pages/NFTSingle/page.svelte'
   import Connect from '@/presentation/pages/Connect/page.svelte'
   import {authCheck as liffAuthCheck} from '@/application/useLiffAuth'
@@ -22,6 +23,7 @@
     <Navigation />
     <div class="px-5 max-w-xl mx-auto">
       <Route path="/"><Home /></Route>
+      <Route path="connect"><Connect /></Route>
       <Route path="faucet"><Faucet /></Route>
       <Route path="staking"><Staking /></Route>
       <Route path="nft"><NFT /></Route>
@@ -32,7 +34,7 @@
           </Route>
         </Router>
       </Route>
-      <Route path="connect"><Connect /></Route>
+      <Route path="nft-mint"><NFTMint /></Route>
     </div>
   </Router>
 </main>

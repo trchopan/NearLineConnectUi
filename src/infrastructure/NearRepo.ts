@@ -140,7 +140,7 @@ export class _NearRepo implements INearRepo {
 
   private readonly nonfungibleTokenContractMethods: ContractMethods = {
     viewMethods: ['nft_token', 'nft_tokens', 'nft_tokens_for_owner'],
-    changeMethods: [],
+    changeMethods: ['nft_mint'],
   }
 
   private readonly nearLineConnectMethods: ContractMethods = {
@@ -652,6 +652,32 @@ export class _NearRepo implements INearRepo {
         }
       ),
       TE.map(v => new LineId(v))
+    )
+  }
+
+  mintNonFungibleToken(t: NonfungibleInfo): TE.TaskEither<NearError, void> {
+    const mintTransaction: TransactionCall = {
+      receiverId: this.nonfungibleTokenContract.contractId,
+      functionCalls: [
+        {
+          methodName: 'nft_mint',
+          args: NonfungibleInfoMapper.toPersist(t),
+          gas: '60000000000000',
+          deposit: '0.015',
+        },
+      ],
+    }
+    return pipe(
+      this.getNearProfile(),
+      TE.chainW(() =>
+        TE.tryCatch(
+          async () => this.executeMultipleTransactions([mintTransaction]),
+          err => {
+            console.error('mintNonFungibleToken', err)
+            return new NearError(NearErrorCode.ContractError, err)
+          }
+        )
+      )
     )
   }
 

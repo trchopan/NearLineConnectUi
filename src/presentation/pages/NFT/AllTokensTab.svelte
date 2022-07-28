@@ -19,7 +19,7 @@
       const meta = t.metadata.getOrCrash()
       return {
         ownerId: t.ownerId.getOrCrash(),
-        tokenId: t.tokenId,
+        tokenId: t.tokenId.getOrCrash(),
         img: parseIpfs(meta.media),
         title: meta.title,
         description: meta.description,
@@ -45,7 +45,6 @@
   <div>Loading tokens...</div>
 {:else}
   <div>
-    <h1 class="text-2xl font-medium mb-5">Collection Test Squid Game</h1>
     <NftGrid tokens={allTokens} withOwner />
   </div>
 {/if}

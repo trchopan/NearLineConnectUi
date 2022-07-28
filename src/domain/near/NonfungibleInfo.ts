@@ -1,26 +1,23 @@
-import {Entity, EntityCorrupted} from '@/domain/core/Entity'
-import {ContractId} from './ContractId'
+import {Entity} from '@/domain/core/Entity'
 import {NearId} from './NearId'
 import {NonfungibleMetadataValue} from './NonfungibleMetadataValue'
-import * as E from 'fp-ts/Either'
+import {NonfungibleTokenId} from './NonfungibleTokenId'
 
 interface NonfungibleInfoProps {
-  token_id: string
   owner_id: NearId
   metadata: NonfungibleMetadataValue
 }
 
-export class NonfungibleInfo extends Entity<NonfungibleInfoProps, ContractId> {
-  constructor(props: NonfungibleInfoProps, _id: ContractId) {
+export class NonfungibleInfo extends Entity<
+  NonfungibleInfoProps,
+  NonfungibleTokenId
+> {
+  constructor(props: NonfungibleInfoProps, _id: NonfungibleTokenId) {
     super(props, _id)
   }
 
-  get contractId() {
-    return this._id
-  }
-
   get tokenId() {
-    return this.props.token_id
+    return this._id
   }
 
   get ownerId() {
@@ -39,13 +36,23 @@ export class NonfungibleInfoMapper {
     const {token_id, owner_id, metadata} = v || {}
     return new NonfungibleInfo(
       {
-        token_id,
         owner_id: new NearId(owner_id),
         metadata: new NonfungibleMetadataValue(metadata),
       },
-      new ContractId('')
+      new NonfungibleTokenId(token_id)
     )
   }
 
-  // TODO static toPersist(sp: NonfungibleInfo) {}
+  static toPersist(v: NonfungibleInfo) {
+    const metadata = v.metadata.getOrCrash()
+    const persistMetadata = {
+      ...metadata,
+      extra: metadata.extra.toString(),
+    }
+    return {
+      token_id: v.tokenId.getOrCrash(),
+      receiver_id: v.ownerId.getOrCrash(),
+      token_metadata: persistMetadata,
+    }
+  }
 }
