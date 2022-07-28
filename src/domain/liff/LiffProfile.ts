@@ -1,19 +1,20 @@
 import {Entity} from '@/domain/core/Entity'
 import {DisplayNameValue} from './DisplayNameValue'
 import {UrlValue} from './UrlValue'
-import {LiffId} from './LiffId'
+import {LineId} from './LineId'
 
 interface LiffProfileProps {
   displayName: DisplayNameValue
   pictureUrl: UrlValue
+  token: String
 }
 
-export class LiffProfile extends Entity<LiffProfileProps, LiffId> {
-  constructor(props: LiffProfileProps, _id: LiffId) {
+export class LiffProfile extends Entity<LiffProfileProps, LineId> {
+  constructor(props: LiffProfileProps, _id: LineId) {
     super(props, _id)
   }
 
-  get userId() {
+  get lineId() {
     return this._id
   }
 
@@ -24,24 +25,24 @@ export class LiffProfile extends Entity<LiffProfileProps, LiffId> {
   get pictureUrl() {
     return this.props.pictureUrl
   }
+
+  get token() {
+    return this.props.token
+  }
 }
 
 export class LiffProfileMapper {
-  static toDTO({userId, displayName, pictureUrl}: LiffProfile): object {
-    return {
-      userId: userId.getOrCrash(),
-      displayName: displayName.getOrCrash(),
-      pictureUrl: pictureUrl.getOrCrash(),
-    }
-  }
+  // static toDTO({userId, displayName, pictureUrl}: LiffProfile): object {}
 
-  static toDomain({userId, displayName, pictureUrl}: any): LiffProfile {
+  static toDomain(v: any): LiffProfile {
+    const {userId, displayName, pictureUrl, token} = v || {}
     return new LiffProfile(
       {
         displayName: new DisplayNameValue(displayName),
         pictureUrl: new UrlValue(pictureUrl),
+        token,
       },
-      new LiffId(userId)
+      new LineId(userId)
     )
   }
 

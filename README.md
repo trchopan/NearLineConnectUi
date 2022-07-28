@@ -3,12 +3,12 @@
 A demo app on Near Protocol testnet with Line Liff authentication.
 
 Functionalities:
-- Fungible token (Token)
-- Non-Fungible token (NFT)
+- Connect Line Account with Wallet
 - Faucet
 - Staking
-- Validation on Line Liff
-- Share and View NFT
+- Fungible token
+- Non-Fungible token
+- Browse and View NFT
 
 ## Develop
 
@@ -17,7 +17,8 @@ This front-end using Svelte framework for building the app. TailwindCss with Dai
 ### Read more about convention when developing
 
 - Domain [README.md](./src/domain/README.md)
-- Infrastructure [README.md](./src/infrastructure.md)
+- Infrastructure [README.md](./src/infrastructure/README.md)
+- Architecture design based on [link](https://chop.ink/posts/how-to-structure-application/)
 
 ### Run
 

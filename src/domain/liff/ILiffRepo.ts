@@ -1,6 +1,7 @@
 import type {LiffProfile} from './LiffProfile'
 import type * as TE from 'fp-ts/TaskEither'
 import type * as E from 'fp-ts/Either'
+import type {LiffAcccessToken} from './LiffAccessToken'
 
 export enum LiffErrorCode {
   ServerError = 'ServerError',
@@ -28,6 +29,7 @@ export class LiffError extends Error {
 export interface ILiffRepo {
   initLiff(): TE.TaskEither<LiffError, void>
   getLiffProfile(): TE.TaskEither<LiffError, LiffProfile>
+  getLiffAccessToken(): E.Either<LiffError, LiffAcccessToken>
   login(): E.Either<LiffError, void>
   logout(): E.Either<LiffError, void>
 }
