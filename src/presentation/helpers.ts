@@ -12,3 +12,7 @@ export const parseIpfs = (url: string) => {
   if (!url.match('ipfs://.*')) return url
   return url.replace('ipfs://', 'https://infura-ipfs.io/ipfs/')
 }
+
+export const copyToClipboard = (data: string) => {
+  navigator.clipboard.writeText(data)
+}

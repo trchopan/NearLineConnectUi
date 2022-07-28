@@ -11,6 +11,8 @@ import type {NonfungibleInfoList} from './NonfungibleInfoList'
 import type {NearId} from './NearId'
 import type {NonfungibleInfo} from './NonfungibleInfo'
 import type {LineId} from '../liff/LineId'
+import type {NonfungibleTokenId} from './NonfungibleTokenId'
+import type {BigNumberValue} from './BigNumberValue'
 
 export enum NearErrorCode {
   ContractError = 'ContractError',
@@ -48,7 +50,6 @@ export class NearError extends Error {
  **/
 export interface INearRepo {
   /**
-   *
    * Get the current Near Account information. This is distinguish from the Liff Profile.
    * If not found account in current Storage. It will throw `NearError.AccountNotFound`.
    **/
@@ -176,4 +177,12 @@ export interface INearRepo {
    * Mint a new token
    **/
   mintNonFungibleToken(t: NonfungibleInfo): TE.TaskEither<NearError, void>
+
+  /**
+   * Transfer the fungible token to make the purcase of nonfungible token
+   **/
+  buyNonFungibleToken(
+    token_id: NonfungibleTokenId,
+    amount: BigNumberValue
+  ): TE.TaskEither<NearError, void>
 }

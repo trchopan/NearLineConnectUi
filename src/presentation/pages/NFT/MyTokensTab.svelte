@@ -1,15 +1,9 @@
 <script lang="ts">
-  import NftGrid from './NftGrid.svelte'
+  import NftGridItem from './NftGridItem.svelte'
   import {myNonfungibleTokenInfo} from '@/application/useNearNonfungible'
   import {parseIpfs} from '@/presentation/helpers'
   import {isEmpty} from 'lodash'
-
-  interface NftGridView {
-    tokenId: string
-    img: string
-    title: string
-    description: string
-  }
+  import type {NftGridView} from './NftGridView'
 
   let myTokens: NftGridView[]
   $: $myNonfungibleTokenInfo
@@ -18,9 +12,10 @@
     })
     .onHasData(data => {
       myTokens = data.tokens.map(t => {
-        const meta = t.metadata.getOrCrash()
+        const meta = t.metadata
         return {
-          tokenId: t.tokenId,
+          ownerId: t.ownerId.getOrCrash(),
+          tokenId: t.tokenId.getOrCrash(),
           img: parseIpfs(meta.media),
           title: meta.title,
           description: meta.description,
@@ -32,7 +27,9 @@
 {#if $myNonfungibleTokenInfo.loading && isEmpty(myTokens)}
   <div>Loading tokens...</div>
 {:else}
-  <div>
-    <NftGrid tokens={myTokens} />
-  </div>
+  <ul class="grid grid-cols-2 md:grid-cols-3 gap-3">
+    {#each myTokens as token}
+      <NftGridItem {token} />
+    {/each}
+  </ul>
 {/if}

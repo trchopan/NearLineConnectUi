@@ -6,12 +6,10 @@
     NonfungibleInfo,
     NonfungibleInfoMapper,
   } from '@/domain/near/NonfungibleInfo'
-  import {NonfungibleMetadataValue} from '@/domain/near/NonfungibleMetadataValue'
+  import {NonfungibleMetadata} from '@/domain/near/NonfungibleMetadata'
   import {NonfungibleTokenId} from '@/domain/near/NonfungibleTokenId'
 
   import SimpleInput from '@/presentation/components/SimpleInput.svelte'
-  import axios from 'axios'
-  import {onMount} from 'svelte'
 
   let token_id = ''
   let receiver_id = 'choptr.testnet'
@@ -24,7 +22,7 @@
     new NonfungibleInfo(
       {
         owner_id: new NearId(receiver_id),
-        metadata: new NonfungibleMetadataValue({
+        metadata: new NonfungibleMetadata({
           title,
           description,
           media,

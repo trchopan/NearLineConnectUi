@@ -31,15 +31,17 @@
   />
 </div>
 
-{#if $nearProfile.loading}
-  <div>Loading wallet...</div>
-{:else if $nearProfile.notInited || $nearProfile.hasError}
-  <AllTokensTab />
-{:else if !$myNonfungibleTokenInfo.hasError && !$allNonfungibleTokenInfo.hasError}
-  <TabCards
-    config={[
-      {name: 'All tokens', component: AllTokensTab},
-      {name: 'My tokens', component: MyTokensTab},
-    ]}
-  />
-{/if}
+<div class="mb-20">
+  {#if $nearProfile.loading}
+    <div>Loading wallet...</div>
+  {:else if $nearProfile.notInited || $nearProfile.hasError}
+    <AllTokensTab />
+  {:else if !$myNonfungibleTokenInfo.hasError && !$allNonfungibleTokenInfo.hasError}
+    <TabCards
+      config={[
+        {name: 'All tokens', component: AllTokensTab},
+        {name: 'My tokens', component: MyTokensTab},
+      ]}
+    />
+  {/if}
+</div>

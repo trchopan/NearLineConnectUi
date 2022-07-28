@@ -7,6 +7,8 @@ import {Result} from '@/application/result'
 import type {NearError} from '@/domain/near/INearRepo'
 import type {NonfungibleInfoList} from '@/domain/near/NonfungibleInfoList'
 import type {NonfungibleInfo} from '@/domain/near/NonfungibleInfo'
+import type {NonfungibleTokenId} from '@/domain/near/NonfungibleTokenId'
+import type {BigNumberValue} from '@/domain/near/BigNumberValue'
 
 export const myNonfungibleTokenInfo = writable(
   new Result<NonfungibleInfoList, NearError>()
@@ -66,6 +68,20 @@ export const signMintNonFungibleToken = async (t: NonfungibleInfo) => {
     TE.fold(
       err => T.of(mintNonFungibleToken.update(v => v.setError(err))),
       res => T.of(mintNonFungibleToken.update(v => v.setValue(res)))
+    )
+  )()
+}
+
+export const buyNonFungibleToken = writable(new Result<void, NearError>())
+
+export const signBuyNonfungibleToken = async (token: NonfungibleInfo) => {
+  buyNonFungibleToken.update(v => v.setLoading())
+  await pipe(
+    NearRepo.buyNonFungibleToken(token.tokenId, token.metadata.extra),
+    T.delay(3000), // Simulate loading
+    TE.fold(
+      err => T.of(buyNonFungibleToken.update(v => v.setError(err))),
+      res => T.of(buyNonFungibleToken.update(v => v.setValue(res)))
     )
   )()
 }
