@@ -11,7 +11,10 @@ import type {IConnectRepo} from '@/domain/connect/IConnectRepo'
 import {_ConnectRepo} from '@/infrastructure/ConnectRepo'
 import axios from 'axios'
 
-export const LiffRepo: ILiffRepo = new _LiffRepo(liff)
+export const LiffRepo: ILiffRepo = new _LiffRepo(
+  liff,
+  import.meta.env.VITE_LIFF_ID
+)
 export const NearRepo: INearRepo = new _NearRepo(
   nearBrowserLocalStorage(getConfig(import.meta.env.MODE)),
   {
