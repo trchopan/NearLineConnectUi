@@ -52,6 +52,8 @@ import {
   NonfungibleInfoMapper,
 } from '@/domain/near/NonfungibleInfo'
 import {LineId} from '@/domain/liff/LineId'
+import type {NonfungibleTokenId} from '@/domain/near/NonfungibleTokenId'
+import type {BigNumberValue} from '@/domain/near/BigNumberValue'
 
 export const STAKING_STORAGE_AMOUNT = '0.01'
 export const FT_STORAGE_AMOUNT = '0.01'
@@ -71,7 +73,6 @@ interface TransactionCall {
 
 export const getConfig = (env: string): NearConfig => {
   switch (env) {
-    case 'production':
     case 'mainnet':
       return {
         networkId: 'mainnet',
@@ -80,6 +81,7 @@ export const getConfig = (env: string): NearConfig => {
         helperUrl: 'https://helper.mainnet.near.org',
         headers: {},
       }
+    case 'production':
     case 'development':
       return {
         networkId: 'testnet',
@@ -674,6 +676,39 @@ export class _NearRepo implements INearRepo {
           async () => this.executeMultipleTransactions([mintTransaction]),
           err => {
             console.error('mintNonFungibleToken', err)
+            return new NearError(NearErrorCode.ContractError, err)
+          }
+        )
+      )
+    )
+  }
+
+  buyNonFungibleToken(
+    token_id: NonfungibleTokenId,
+    amount: BigNumberValue
+  ): TE.TaskEither<NearError, void> {
+    const purchaseTransaction: TransactionCall = {
+      receiverId: this.fungibleTokenContract.contractId,
+      functionCalls: [
+        {
+          methodName: 'ft_transfer_call',
+          args: {
+            receiver_id: this.nonfungibleTokenContract.contractId,
+            amount: amount.toString(),
+            msg: JSON.stringify({token_ids: [token_id.getOrCrash()]}),
+          },
+          gas: '60000000000000',
+          deposit: ONE_YOCTO_NEAR,
+        },
+      ],
+    }
+    return pipe(
+      this.getNearProfile(),
+      TE.chainW(() =>
+        TE.tryCatch(
+          () => this.executeMultipleTransactions([purchaseTransaction]),
+          err => {
+            console.error('stakeFungibleToken', err)
             return new NearError(NearErrorCode.ContractError, err)
           }
         )

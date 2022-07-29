@@ -1,11 +1,14 @@
 import {Entity} from '@/domain/core/Entity'
 import {NearId} from './NearId'
-import {NonfungibleMetadataValue} from './NonfungibleMetadataValue'
+import {
+  NonfungibleMetadata,
+  NonfungibleMetadataMapper,
+} from './NonfungibleMetadata'
 import {NonfungibleTokenId} from './NonfungibleTokenId'
 
 interface NonfungibleInfoProps {
   owner_id: NearId
-  metadata: NonfungibleMetadataValue
+  metadata: NonfungibleMetadata
 }
 
 export class NonfungibleInfo extends Entity<
@@ -37,22 +40,18 @@ export class NonfungibleInfoMapper {
     return new NonfungibleInfo(
       {
         owner_id: new NearId(owner_id),
-        metadata: new NonfungibleMetadataValue(metadata),
+        metadata: new NonfungibleMetadata(metadata, token_id),
       },
       new NonfungibleTokenId(token_id)
     )
   }
 
   static toPersist(v: NonfungibleInfo) {
-    const metadata = v.metadata.getOrCrash()
-    const persistMetadata = {
-      ...metadata,
-      extra: metadata.extra.toString(),
-    }
+    const metadata = NonfungibleMetadataMapper.toPersist(v.metadata)
     return {
       token_id: v.tokenId.getOrCrash(),
       receiver_id: v.ownerId.getOrCrash(),
-      token_metadata: persistMetadata,
+      token_metadata: metadata,
     }
   }
 }

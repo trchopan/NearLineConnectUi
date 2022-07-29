@@ -1,22 +1,15 @@
 <script lang="ts">
-  import NftGrid from './NftGrid.svelte'
+  import NftGridItem from './NftGridItem.svelte'
   import {allNonfungibleTokenInfo} from '@/application/useNearNonfungible'
   import {login, nearProfile} from '@/application/useNearAuth'
   import {parseIpfs} from '@/presentation/helpers'
   import {isEmpty} from 'lodash'
-
-  interface NftGridView {
-    tokenId: string
-    ownerId: string
-    img: string
-    title: string
-    description: string
-  }
+  import type {NftGridView} from './NftGridView'
 
   let allTokens: NftGridView[] = []
   $: $allNonfungibleTokenInfo.onHasData(data => {
     allTokens = data.tokens.map(t => {
-      const meta = t.metadata.getOrCrash()
+      const meta = t.metadata
       return {
         ownerId: t.ownerId.getOrCrash(),
         tokenId: t.tokenId.getOrCrash(),
@@ -26,6 +19,12 @@
       }
     })
   })
+
+  const isCreator = (token: NftGridView) =>
+    token.ownerId === import.meta.env.VITE_NFT_OWNER_ID
+
+  const isMyToken = (token: NftGridView) =>
+    token.ownerId === $nearProfile.value?.accountId.getOrElse(null)
 </script>
 
 {#if $nearProfile.notInited || $nearProfile.hasError}
@@ -44,7 +43,13 @@
 {#if $allNonfungibleTokenInfo.loading && isEmpty(allTokens)}
   <div>Loading tokens...</div>
 {:else}
-  <div>
-    <NftGrid tokens={allTokens} withOwner />
-  </div>
+  <ul class="grid grid-cols-2 md:grid-cols-3 gap-3">
+    {#each allTokens as token}
+      <NftGridItem
+        {token}
+        sold={!isCreator(token) && !isMyToken(token)}
+        owner={!isCreator(token) && isMyToken(token)}
+      />
+    {/each}
+  </ul>
 {/if}
