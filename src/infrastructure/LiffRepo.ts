@@ -11,13 +11,13 @@ import {
 import type {NonfungibleInfo} from '@/domain/near/NonfungibleInfo'
 
 export class _LiffRepo implements ILiffRepo {
-  constructor(private liff: Liff) {}
+  constructor(private liff: Liff, private liffId: string) {}
 
   initLiff(): TE.TaskEither<LiffError, void> {
     const liffInitPromise = new Promise<void>((resolve, reject) =>
       this.liff.init(
         {
-          liffId: '1657284859-PZjvVAyL',
+          liffId: this.liffId,
           // withLoginOnExternalBrowser: true,
         },
         () => resolve(),
