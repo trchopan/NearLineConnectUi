@@ -1,7 +1,8 @@
-import type {LiffProfile} from './LiffProfile'
 import type * as TE from 'fp-ts/TaskEither'
 import type * as E from 'fp-ts/Either'
-import type {LiffAcccessToken} from './LiffAccessToken'
+import type {LiffProfile} from '@/domain/liff/LiffProfile'
+import type {LiffAcccessToken} from '@/domain/liff/LiffAccessToken'
+import type {NonfungibleInfo} from '@/domain/near/NonfungibleInfo'
 
 export enum LiffErrorCode {
   ServerError = 'ServerError',

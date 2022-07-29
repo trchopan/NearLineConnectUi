@@ -8,6 +8,7 @@ import {
   LiffAcccessToken,
   LiffAcccessTokenMapper,
 } from '@/domain/liff/LiffAccessToken'
+import type {NonfungibleInfo} from '@/domain/near/NonfungibleInfo'
 
 export class _LiffRepo implements ILiffRepo {
   constructor(private liff: Liff) {}
@@ -70,7 +71,7 @@ export class _LiffRepo implements ILiffRepo {
 
   login(): E.Either<LiffError, void> {
     return E.tryCatch(
-      () => this.liff.login({redirectUri: 'https://localhost:3000'}),
+      () => this.liff.login({redirectUri: document.location.href}),
       err => {
         console.error(err)
         return new LiffError(LiffErrorCode.ServerError, err)
