@@ -19,7 +19,9 @@
   } from '@/presentation/helpers'
   import {onMount} from 'svelte'
   import {blur} from 'svelte/transition'
-import type { NonfungibleInfo } from '@/domain/near/NonfungibleInfo';
+  import type {NonfungibleInfo} from '@/domain/near/NonfungibleInfo'
+  import liff from '@line/liff'
+  import {doShareTargetPicker} from '@/application/useLiffAuth'
 
   export let id: string
 
@@ -80,8 +82,8 @@ import type { NonfungibleInfo } from '@/domain/near/NonfungibleInfo';
 
   let toast = false
   const share = () => {
-    const url = `https://localhost:3000/nft/${singleNonfungibleTokenView.token_id}`
-    if (!navigator.canShare?.()) {
+    const url = document.location.href
+    if (liff.getOS() == 'web') {
       copyToClipboard(url)
 
       if (toast) return
@@ -176,7 +178,8 @@ import type { NonfungibleInfo } from '@/domain/near/NonfungibleInfo';
   <div class="my-10 flex flex-col gap-3">
     {#if canPurchase()}
       <button
-        on:click|preventDefault={() => signBuyNonfungibleToken(singleNonfungibleTokenView.token)}
+        on:click|preventDefault={() =>
+          signBuyNonfungibleToken(singleNonfungibleTokenView.token)}
         class="btn btn-primary btn-lg text-white"
       >
         Purchase with LINE token
