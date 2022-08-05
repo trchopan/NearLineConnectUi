@@ -1,5 +1,3 @@
-#!/usr/bin/env -S deno run --allow-read
-
 export interface LineFriend {
   id: number
   title: string
@@ -64,8 +62,9 @@ export interface Variant {
   requires_shipping: boolean
 }
 
-const fileRaw = await Deno.readFile('line_friends.json')
-const file = new TextDecoder().decode(fileRaw)
+// const fileRaw = await Deno.readFile('line_friends.json')
+// const file = new TextDecoder().decode(fileRaw)
+const
 const data: LineFriend[] = JSON.parse(file)
 
 const removeHtml = (str: string) => str.replace(/(<([^>]+)>)/gi, '')

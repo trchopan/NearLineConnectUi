@@ -35,7 +35,7 @@
     </p>
     <div class="my-5">
       <button on:click={login} class="btn btn-black w-full">
-        Login NEAR to lucky draw your NFTs
+        Login NEAR to purchase your NFTs
       </button>
     </div>
   </div>

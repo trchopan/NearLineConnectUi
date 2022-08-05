@@ -64,8 +64,7 @@
         ' LINE'
       stakingAccountView.pendingReward =
         thousandComma(data.reward.getOrElse(new BN(0)).toString()) + ' LINE'
-      stakingAccountView.canClaim =
-        data.canWithdraw && data.reward.getOrElse(new BN(0)).gt(new BN(0))
+      stakingAccountView.canClaim = data.reward.getOrElse(new BN(0)).gt(new BN(0))
 
       //
       stakingWithdrawView.unstaked =
@@ -186,7 +185,6 @@
         <button
           on:click={() => signWithdrawFromStakingPool()}
           class="btn btn-secondary w-full"
-          class:btn-disabled={!stakingAccountView.canClaim}
           class:loading={$withdrawFromStakingPool.loading}
         >
           Widthdraw

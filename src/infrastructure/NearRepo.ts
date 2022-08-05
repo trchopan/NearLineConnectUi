@@ -403,6 +403,40 @@ export class _NearRepo implements INearRepo {
     )
   }
 
+  transferFungibleToken(
+    receiver_id: NearId,
+    amount: BN,
+    memo?: string
+  ): TE.TaskEither<NearError, void> {
+    const transferTransaction: TransactionCall = {
+      receiverId: this.fungibleTokenContract.contractId,
+      functionCalls: [
+        {
+          methodName: 'ft_transfer',
+          args: {
+            receiver_id: receiver_id.getOrCrash(),
+            amount: amount.toString(),
+            memo,
+          },
+          gas: '60000000000000',
+          deposit: ONE_YOCTO_NEAR,
+        },
+      ],
+    }
+    return pipe(
+      this.getNearProfile(),
+      TE.chainW(() =>
+        TE.tryCatch(
+          async () => this.executeMultipleTransactions([transferTransaction]),
+          err => {
+            console.error('transferFungibleToken', err)
+            return new NearError(NearErrorCode.ContractError, err)
+          }
+        )
+      )
+    )
+  }
+
   stakeFungibleToken(amount: string): TE.TaskEither<NearError, void> {
     const storageDepositTransaction: TransactionCall = {
       receiverId: this.stakingContract.contractId,

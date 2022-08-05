@@ -6,7 +6,7 @@
   export let number: boolean = false
 </script>
 
-<div class="form-control w-full max-w-xs">
+<div class="form-control w-full">
   <label class="label">
     <span class="label-text">{title}</span>
   </label>
@@ -14,8 +14,8 @@
     <textarea
       bind:value
       placeholder={title}
-      disabled={disabled}
-      class="textarea textarea-bordered h-40 w-full max-w-xs"
+      {disabled}
+      class="textarea textarea-bordered h-40 w-full"
     />
   {:else if number}
     <span>num</span>
@@ -23,16 +23,16 @@
       bind:value
       type="number"
       placeholder={title}
-      disabled={disabled}
-      class="input input-bordered w-full max-w-xs"
+      {disabled}
+      class="input input-bordered w-full"
     />
   {:else}
     <input
       bind:value
       type="text"
       placeholder={title}
-      disabled={disabled}
-      class="input input-bordered w-full max-w-xs"
+      {disabled}
+      class="input input-bordered w-full"
     />
   {/if}
 </div>
