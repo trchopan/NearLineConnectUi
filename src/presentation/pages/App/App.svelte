@@ -8,6 +8,7 @@
   import NFTMint from '@/presentation/pages/NFTMint/page.svelte'
   import NFTSingle from '@/presentation/pages/NFTSingle/page.svelte'
   import Connect from '@/presentation/pages/Connect/page.svelte'
+  import Wallet from '@/presentation/pages/Wallet/page.svelte'
   import {authCheck as liffAuthCheck} from '@/application/useLiffAuth'
   import {authCheck as nearWalletCheck} from '@/application/useNearAuth'
   import {onMount} from 'svelte'
@@ -24,6 +25,7 @@
     <div class="px-5 max-w-xl mx-auto">
       <Route path="/"><Home /></Route>
       <Route path="connect"><Connect /></Route>
+      <Route path="wallet"><Wallet /></Route>
       <Route path="faucet"><Faucet /></Route>
       <Route path="staking"><Staking /></Route>
       <Route path="nft"><NFT /></Route>

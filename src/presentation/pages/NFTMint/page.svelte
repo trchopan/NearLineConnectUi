@@ -2,14 +2,11 @@
   import Sample from '@/assets/line_friends_result.json'
   import {signMintNonFungibleToken} from '@/application/useNearNonfungible'
   import {NearId} from '@/domain/near/NearId'
-  import {
-    NonfungibleInfo,
-    NonfungibleInfoMapper,
-  } from '@/domain/near/NonfungibleInfo'
+  import {NonfungibleInfo} from '@/domain/near/NonfungibleInfo'
   import {NonfungibleMetadata} from '@/domain/near/NonfungibleMetadata'
   import {NonfungibleTokenId} from '@/domain/near/NonfungibleTokenId'
-
   import SimpleInput from '@/presentation/components/SimpleInput.svelte'
+  import {BigNumberValue} from '@/domain/near/BigNumberValue'
 
   let token_id = ''
   let receiver_id = 'choptr.testnet'
@@ -22,23 +19,18 @@
     new NonfungibleInfo(
       {
         owner_id: new NearId(receiver_id),
-        metadata: new NonfungibleMetadata({
-          title,
-          description,
-          media,
-          extra,
-        }),
+        metadata: new NonfungibleMetadata(
+          {
+            title,
+            description,
+            media,
+            extra: new BigNumberValue(extra),
+          },
+          new NonfungibleTokenId(token_id)
+        ),
       },
       new NonfungibleTokenId(token_id)
     )
-  $: nftValid = () => {
-    try {
-      return NonfungibleInfoMapper.toPersist(nft())
-    } catch (err) {
-      console.error(err)
-      return null
-    }
-  }
 
   const mintNft = () => {
     signMintNonFungibleToken(nft())
@@ -88,11 +80,11 @@
 </div>
 
 {#if media}
-<div class="flex flex-col items-center">
-  <div class="w-full max-w-sm rounded">
-    <img src={media} alt="0" />
+  <div class="flex flex-col items-center">
+    <div class="w-full max-w-sm rounded">
+      <img src={media} alt="0" />
+    </div>
+    <div class="text-lg font-medium">{title}</div>
+    <div>{extra}</div>
   </div>
-  <div class="text-lg font-medium">{title}</div>
-  <div>{extra}</div>
-</div>
 {/if}

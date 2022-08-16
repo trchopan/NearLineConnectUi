@@ -7,12 +7,13 @@ import {Result} from '@/application/result'
 import type {NearError} from '@/domain/near/INearRepo'
 import type {FungibleAccountBalance} from '@/domain/near/FungibleAccountBalance'
 import type BN from 'bn.js'
+import type {NearId} from '@/domain/near/NearId'
 
 export const fungibleAccountBalance = writable(
   new Result<FungibleAccountBalance, NearError>()
 )
 
-export const getFungibleAccountBalance= async () => {
+export const getFungibleAccountBalance = async () => {
   fungibleAccountBalance.update(v => v.setLoading())
   await pipe(
     NearRepo.getFungibleAccountBalance(),
@@ -34,6 +35,23 @@ export const signClaimFaucetTokens = async (amount: BN) => {
     TE.fold(
       err => T.of(claimFaucetTokens.update(v => v.setError(err))),
       res => T.of(claimFaucetTokens.update(v => v.setValue(res)))
+    )
+  )()
+}
+
+export const transferFungibleTokens = writable(new Result<void, NearError>())
+
+export const signTransferFungibleTokens = async (
+  receiver: NearId,
+  amount: BN
+) => {
+  transferFungibleTokens.update(v => v.setLoading())
+  await pipe(
+    NearRepo.transferFungibleToken(receiver, amount),
+    T.delay(3000), // Simulate loading
+    TE.fold(
+      err => T.of(transferFungibleTokens.update(v => v.setError(err))),
+      res => T.of(transferFungibleTokens.update(v => v.setValue(res)))
     )
   )()
 }

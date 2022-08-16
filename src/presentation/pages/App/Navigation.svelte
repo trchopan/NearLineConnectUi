@@ -21,6 +21,7 @@
   }
   const pages: PageRoute[] = [
     {link: '/connect', text: 'Connect'},
+    {link: '/wallet', text: 'Wallet'},
     {link: '/staking', text: 'Staking'},
     {link: '/faucet', text: 'Faucet'},
     {link: '/nft', text: 'NFT'},
