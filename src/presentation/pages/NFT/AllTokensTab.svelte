@@ -8,7 +8,7 @@
 
   let allTokens: NftGridView[] = []
   $: $allNonfungibleTokenInfo.onHasData(data => {
-    allTokens = data.tokens.map(t => {
+    allTokens = data.orderedTokens.map(t => {
       const meta = t.metadata
       return {
         ownerId: t.ownerId.getOrCrash(),

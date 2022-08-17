@@ -21,6 +21,10 @@ export class NonfungibleInfoList extends Entity<
   get tokens() {
     return this.props.tokens
   }
+
+  get orderedTokens() {
+    return this.props.tokens.sort((a, b) => (a.tokenId > b.tokenId ? -1 : 1))
+  }
 }
 
 export class NonfungibleInfoListMapper {
