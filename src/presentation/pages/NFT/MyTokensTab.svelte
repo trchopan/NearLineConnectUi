@@ -11,7 +11,7 @@
       myTokens = []
     })
     .onHasData(data => {
-      myTokens = data.tokens.map(t => {
+      myTokens = data.orderedTokens.map(t => {
         const meta = t.metadata
         return {
           ownerId: t.ownerId.getOrCrash(),
