@@ -1,3 +1,7 @@
+import * as T from 'fp-ts/Task'
+import * as TE from 'fp-ts/TaskEither'
+import type {Writable} from 'svelte/store'
+
 export enum DataState {
   NotInited = 'NotInited',
   Loading = 'Loading',
@@ -103,3 +107,24 @@ export class Result<T, Err> {
     }
   }
 }
+
+/**
+ * Fold the result with given Writable Result
+ * Set the data and change state based on Result or Error
+ *
+ * `foldWritable(storeVal)`
+ *
+ * is equipvalent to
+ *
+ * ```
+ * T.fold(
+ *   err => T.of(storeVal.update(v => v.setError(err)))
+ *   res => T.of(storeVal.update(v => v.setValue(res)))
+ * )
+ * ```
+ */
+export const foldResult = <T, Err>(w: Writable<Result<T, Err>>) =>
+  TE.fold<Err, T, void>(
+    err => T.of(w.update(v => v.setError(err))),
+    res => T.of(w.update(v => v.setValue(res)))
+  )

@@ -3,7 +3,7 @@ import * as T from 'fp-ts/Task'
 import * as TE from 'fp-ts/TaskEither'
 import {pipe} from 'fp-ts/function'
 import {get, writable} from 'svelte/store'
-import {Result} from '@/application/result'
+import {foldResult, Result} from '@/application/result'
 import type {NearError} from '@/domain/near/INearRepo'
 import type {LineId} from '@/domain/liff/LineId'
 import type {NearId} from '@/domain/near/NearId'
@@ -31,10 +31,7 @@ export const getRegistrationSignature = async (info: {
       })
     ),
     T.delay(3000), // Simulate loading
-    TE.fold(
-      err => T.of(registrationSignature.update(v => v.setError(err))),
-      res => T.of(registrationSignature.update(v => v.setValue(res)))
-    )
+    foldResult(registrationSignature)
   )()
 }
 
@@ -55,10 +52,7 @@ export const signRecordLineId = async ({
   await pipe(
     NearRepo.recordLineId(signature, line_id, wallet, expire),
     T.delay(3000), // Simulate loading
-    TE.fold(
-      err => T.of(recordLineId.update(v => v.setError(err))),
-      res => T.of(recordLineId.update(v => v.setValue(res)))
-    )
+    foldResult(recordLineId)
   )()
 }
 
@@ -79,10 +73,7 @@ export const signRemoveLineId = async ({
   await pipe(
     NearRepo.removeLineId(signature, line_id, wallet, expire),
     T.delay(3000), // Simulate loading
-    TE.fold(
-      err => T.of(removeLineId.update(v => v.setError(err))),
-      res => T.of(removeLineId.update(v => v.setValue(res)))
-    )
+    foldResult(removeLineId)
   )()
 }
 
@@ -102,10 +93,7 @@ export const getMyLineIdByWallet = async () => {
   await pipe(
     NearRepo.getLineIdByWallet(_nearProfile.value?.accountId),
     T.delay(3000), // Simulate loading
-    TE.fold(
-      err => T.of(myLineIdByWallet.update(v => v.setError(err))),
-      res => T.of(myLineIdByWallet.update(v => v.setValue(res)))
-    )
+    foldResult(myLineIdByWallet)
   )()
 }
 
@@ -116,10 +104,7 @@ export const getLineIdByWallet = async (wallet: NearId) => {
   await pipe(
     NearRepo.getLineIdByWallet(wallet),
     T.delay(3000), // Simulate loading
-    TE.fold(
-      err => T.of(lineIdByWallet.update(v => v.setError(err))),
-      res => T.of(lineIdByWallet.update(v => v.setValue(res)))
-    )
+    foldResult(lineIdByWallet)
   )()
 }
 
@@ -130,9 +115,6 @@ export const getLineProfileById = async (lineId: LineId) => {
   await pipe(
     ConnectRepo.getLineProfileByLineId(lineId),
     T.delay(3000), // Simulate loading
-    TE.fold(
-      err => T.of(lineProfileById.update(v => v.setError(err))),
-      res => T.of(lineProfileById.update(v => v.setValue(res)))
-    )
+    foldResult(lineProfileById)
   )()
 }

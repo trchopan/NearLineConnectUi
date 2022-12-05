@@ -8,7 +8,6 @@ import {derived, writable} from 'svelte/store'
 import {Result} from '@/application/result'
 import type {LiffAcccessToken} from '@/domain/liff/LiffAccessToken'
 import {myLineIdByWallet} from './useNearLineConnect'
-import type {NonfungibleInfo} from '@/domain/near/NonfungibleInfo'
 
 export const liffProfile = writable(new Result<LiffProfile, LiffError>())
 

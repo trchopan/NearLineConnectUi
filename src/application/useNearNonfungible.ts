@@ -1,14 +1,11 @@
 import {NearRepo} from '@/application/inject'
 import * as T from 'fp-ts/Task'
-import * as TE from 'fp-ts/TaskEither'
 import {pipe} from 'fp-ts/function'
 import {writable} from 'svelte/store'
-import {Result} from '@/application/result'
+import {foldResult, Result} from '@/application/result'
 import type {NearError} from '@/domain/near/INearRepo'
 import type {NonfungibleInfoList} from '@/domain/near/NonfungibleInfoList'
 import type {NonfungibleInfo} from '@/domain/near/NonfungibleInfo'
-import type {NonfungibleTokenId} from '@/domain/near/NonfungibleTokenId'
-import type {BigNumberValue} from '@/domain/near/BigNumberValue'
 
 export const myNonfungibleTokenInfo = writable(
   new Result<NonfungibleInfoList, NearError>()
@@ -19,10 +16,7 @@ export const getMyNonFungibleTokensInfo = async () => {
   await pipe(
     NearRepo.getMyNonFungibleTokensInfo(),
     T.delay(3000), // Simulate loading
-    TE.fold(
-      err => T.of(myNonfungibleTokenInfo.update(v => v.setError(err))),
-      res => T.of(myNonfungibleTokenInfo.update(v => v.setValue(res)))
-    )
+    foldResult(myNonfungibleTokenInfo),
   )()
 }
 
@@ -35,10 +29,7 @@ export const getAllNonFungibleTokensInfo = async () => {
   await pipe(
     NearRepo.getAllNonFungibleTokensInfo(),
     T.delay(3000), // Simulate loading
-    TE.fold(
-      err => T.of(allNonfungibleTokenInfo.update(v => v.setError(err))),
-      res => T.of(allNonfungibleTokenInfo.update(v => v.setValue(res)))
-    )
+    foldResult(allNonfungibleTokenInfo),
   )()
 }
 
@@ -51,10 +42,7 @@ export const getSingleNonFungibleTokensInfo = async (tokenId: string) => {
   await pipe(
     NearRepo.getSingleNonFungibleTokensInfo(tokenId),
     T.delay(3000), // Simulate loading
-    TE.fold(
-      err => T.of(singleNonfungibleTokenInfo.update(v => v.setError(err))),
-      res => T.of(singleNonfungibleTokenInfo.update(v => v.setValue(res)))
-    )
+    foldResult(singleNonfungibleTokenInfo),
   )()
 }
 
@@ -65,10 +53,7 @@ export const signMintNonFungibleToken = async (t: NonfungibleInfo) => {
   await pipe(
     NearRepo.mintNonFungibleToken(t),
     T.delay(3000), // Simulate loading
-    TE.fold(
-      err => T.of(mintNonFungibleToken.update(v => v.setError(err))),
-      res => T.of(mintNonFungibleToken.update(v => v.setValue(res)))
-    )
+    foldResult(mintNonFungibleToken),
   )()
 }
 
@@ -79,9 +64,6 @@ export const signBuyNonfungibleToken = async (token: NonfungibleInfo) => {
   await pipe(
     NearRepo.buyNonFungibleToken(token.tokenId, token.metadata.extra),
     T.delay(3000), // Simulate loading
-    TE.fold(
-      err => T.of(buyNonFungibleToken.update(v => v.setError(err))),
-      res => T.of(buyNonFungibleToken.update(v => v.setValue(res)))
-    )
+    foldResult(buyNonFungibleToken),
   )()
 }

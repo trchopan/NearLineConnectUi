@@ -8,7 +8,6 @@ import {
   LiffAcccessToken,
   LiffAcccessTokenMapper,
 } from '@/domain/liff/LiffAccessToken'
-import type {NonfungibleInfo} from '@/domain/near/NonfungibleInfo'
 
 export class _LiffRepo implements ILiffRepo {
   constructor(private liff: Liff, private liffId: string) {}

@@ -3,7 +3,7 @@ import * as T from 'fp-ts/Task'
 import * as TE from 'fp-ts/TaskEither'
 import {pipe} from 'fp-ts/function'
 import {writable} from 'svelte/store'
-import {Result} from '@/application/result'
+import {foldResult, Result} from '@/application/result'
 import type {NearError} from '@/domain/near/INearRepo'
 import type {FungibleAccountBalance} from '@/domain/near/FungibleAccountBalance'
 import type BN from 'bn.js'
@@ -32,10 +32,7 @@ export const signClaimFaucetTokens = async (amount: BN) => {
   await pipe(
     NearRepo.claimFaucetTokens(amount.toString()),
     T.delay(3000), // Simulate loading
-    TE.fold(
-      err => T.of(claimFaucetTokens.update(v => v.setError(err))),
-      res => T.of(claimFaucetTokens.update(v => v.setValue(res)))
-    )
+    foldResult(claimFaucetTokens)
   )()
 }
 
@@ -49,9 +46,6 @@ export const signTransferFungibleTokens = async (
   await pipe(
     NearRepo.transferFungibleToken(receiver, amount),
     T.delay(3000), // Simulate loading
-    TE.fold(
-      err => T.of(transferFungibleTokens.update(v => v.setError(err))),
-      res => T.of(transferFungibleTokens.update(v => v.setValue(res)))
-    )
+    foldResult(transferFungibleTokens)
   )()
 }

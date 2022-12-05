@@ -1,9 +1,8 @@
 import {NearRepo} from '@/application/inject'
 import * as T from 'fp-ts/Task'
-import * as TE from 'fp-ts/TaskEither'
 import {pipe} from 'fp-ts/function'
 import {writable} from 'svelte/store'
-import {Result} from '@/application/result'
+import {foldResult, Result} from '@/application/result'
 import type {NearError} from '@/domain/near/INearRepo'
 import type {StakingPoolInfo} from '@/domain/near/StakingPoolInfo'
 import type {StakingAccountInfo} from '@/domain/near/StakingAccountInfo'
@@ -18,10 +17,7 @@ export const getStakingAccountInfo = async () => {
   await pipe(
     NearRepo.getStakingAccountInfo(),
     T.delay(3000), // Simulate loading
-    TE.fold(
-      err => T.of(stakingAccountInfo.update(v => v.setError(err))),
-      res => T.of(stakingAccountInfo.update(v => v.setValue(res)))
-    )
+    foldResult(stakingAccountInfo),
   )()
 }
 
@@ -34,10 +30,7 @@ export const getStakingPoolInfo = async () => {
   await pipe(
     NearRepo.getStakingPoolInfo(),
     T.delay(3000), // Simulate loading
-    TE.fold(
-      err => T.of(stakingPoolInfo.update(v => v.setError(err))),
-      res => T.of(stakingPoolInfo.update(v => v.setValue(res)))
-    )
+    foldResult(stakingPoolInfo),
   )()
 }
 
@@ -48,10 +41,7 @@ export const signStakeFungibleToken = async (amount: BN) => {
   await pipe(
     NearRepo.stakeFungibleToken(amount.toString()),
     T.delay(3000), // Simulate loading
-    TE.fold(
-      err => T.of(stakeFungibleToken.update(v => v.setError(err))),
-      res => T.of(stakeFungibleToken.update(v => v.setValue(res)))
-    )
+    foldResult(stakeFungibleToken),
   )()
 }
 
@@ -62,10 +52,7 @@ export const signUnstakeFromStakingPool = async (amount: BN) => {
   await pipe(
     NearRepo.unstakeFromStakingPool(amount.toString()),
     T.delay(3000), // Simulate loading
-    TE.fold(
-      err => T.of(unstakeFromStakingPool.update(v => v.setError(err))),
-      res => T.of(unstakeFromStakingPool.update(v => v.setValue(res)))
-    )
+    foldResult(unstakeFromStakingPool),
   )()
 }
 
@@ -76,10 +63,7 @@ export const signHavestFromStakingPool = async () => {
   await pipe(
     NearRepo.havestFromStakingPool(),
     T.delay(3000), // Simulate loading
-    TE.fold(
-      err => T.of(havestFromStakingPool.update(v => v.setError(err))),
-      res => T.of(havestFromStakingPool.update(v => v.setValue(res)))
-    )
+    foldResult(havestFromStakingPool),
   )()
 }
 
@@ -90,9 +74,6 @@ export const signWithdrawFromStakingPool = async () => {
   await pipe(
     NearRepo.withdrawFromStakingPool(),
     T.delay(3000), // Simulate loading
-    TE.fold(
-      err => T.of(withdrawFromStakingPool.update(v => v.setError(err))),
-      res => T.of(withdrawFromStakingPool.update(v => v.setValue(res)))
-    )
+    foldResult(withdrawFromStakingPool),
   )()
 }
