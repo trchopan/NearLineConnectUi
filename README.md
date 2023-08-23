@@ -1,5 +1,7 @@
 # Near 🔗 Line Demo
 
+Blog Post: [https://chop.dev/posts/near-line-connect/](https://chop.dev/posts/near-line-connect/)
+
 A demo app on Near Protocol testnet with Line Liff authentication.
 
 Functionalities:
